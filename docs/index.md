@@ -1,10 +1,11 @@
 --- 
 title: "Applied NLP for Document Analysis"
 author: "Nick P Taylor"
-date: "2020-05-29"
+date: "2020-05-31"
 site: bookdown::bookdown_site
+output: bookdown::gitbook
 documentclass: book
-bibliography: [book.bib]
+bibliography: packages.bib
 biblio-style: apalike
 link-citations: yes
 github-repo: nickptaylor/nlp-document-analysis
@@ -14,4 +15,4 @@ description: "Bookdown report with examples of applied NLP for document analysis
 
 # Preface {-}
 
-This is the very first part of the book.
+This is a collection of reports describing the use of NLP (Natural Language Programming) for the analysis of documents.
