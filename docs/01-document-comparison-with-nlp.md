@@ -150,6 +150,7 @@ The last operation, reducing words to 'stems', is worthy of some explanation.  C
 
 
 ```r
+# Pre-processing steps.
 tidy_corpus <- corpus %>%
     tm::tm_map(tm::stripWhitespace) %>%
     tm::tm_map(tm::content_transformer(str_to_lower)) %>%
@@ -214,12 +215,13 @@ tdm <- tm::TermDocumentMatrix(tidy_corpus)
 tdm$dimnames$Terms <-tm::stemCompletion(tdm$dimnames$Terms,
                                         before_stem_corpus)
 
+# Create term document data frame.
 df_tdm <- tdm %>%
     as.matrix() %>%
     tibble::as_tibble(rownames = 'term') %>% 
     dplyr::filter(term != "")
 
-# Output random sample of TDM.
+# Output head/tail of TDM.
 df_tdm %>% head()
 df_tdm %>% tail()
 ```
@@ -249,15 +251,38 @@ df_tdm %>% tail()
 
 ### Word Frequency
 
-Figure \@ref(fig:plt-word-freq) shows the top words in each document as a bar plot.  The word frequencies have been normalised by the total number of words in the corpus i.e.
+Figure \@ref(fig:plt-word-freq) shows the top words in each document as a bar plot.  The word frequencies have been normalised by computing the *term frequency*: 
 
 $$
-\bar{f}_{i,j}  = \frac{f_{i,j}}{\sum_{i=1}^{I_j} f_{i,j}}
+\mathrm{TF}_{i,j} = \frac{N_{i,j}}{\sum_{k=1}^{K} N_{k,j}}.
 $$
 
-where $\bar{f_{i,j}}$ and $f_{i,j}$ are the normalised and un-normalised word frequencies for word $i$ in document $j$ respectively and $I_j$ is the number of words in document $j$.  The normalisation corrects for the fact that word frequencies would be expected to scale with the size of the document which would inflate the perceived importance of the word.
+$N_{i, j}$ denotes the word count for the $i$th word in the $j$th document and $K$ iterates through each word in document $j$.  The normalisation corrects for the fact that word frequencies would be expected to scale with the size of the document which would inflate the perceived importance of the word.
 
 (ref:plt-word-freq) Bar plots of term frequencies.
+
+
+```r
+# Prepare plot data.
+df_plt <- df_tdm %>%
+    tidyr::pivot_longer(-term, names_to = 'document', values_to = 'freq') %>%
+    dplyr::group_by(document) %>%
+    dplyr::mutate(freq = freq / sum(freq)) %>%
+    dplyr::top_n(n = 10, wt = freq) %>%
+    dplyr::mutate(term = tidytext::reorder_within(term, freq, document))
+
+# Create plot.
+ggplot2::ggplot(df_plt, aes(x = term, y = freq, fill = document)) +
+    ggplot2::geom_col() +
+    ggplot2::coord_flip() +
+    ggplot2::labs(
+         x = 'Word',
+         y = latex2exp::TeX('Normalised frequency, $\\bar{f}$')) +
+    tidytext::scale_x_reordered() +
+    ggplot2::facet_wrap(~document, ncol = 1, scales = 'free_y') +
+    ggplot2::scale_fill_discrete(guide=FALSE) +
+    ggplot2::theme_linedraw()
+```
 
 <div class="figure" style="text-align: center">
 <img src="01-document-comparison-with-nlp_files/figure-html/plt-word-freq-1.png" alt="(ref:plt-word-freq)" width="70%" />
@@ -266,6 +291,27 @@ where $\bar{f_{i,j}}$ and $f_{i,j}$ are the normalised and un-normalised word fr
 An alternative way to present this information is as a *wordcloud*, as shown in figure \@ref(fig:plt-wordcloud).  Here, the word frequency is mapped to the size of the word depicted in the cloud.  
 
 (ref:plt-wordcloud) Word cloud for each document.
+
+
+```r
+# Prepare plot data.
+set.seed(42)
+df_plt <- df_tdm %>%
+    tidyr::pivot_longer(-term, names_to = 'document', values_to = 'freq') %>%
+    dplyr::group_by(document) %>%
+    dplyr::mutate(freq = freq / sum(freq)) %>%
+    dplyr::top_n(n = 40, wt = freq) %>% 
+    mutate(angle = 90 * sample(c(0, 1), n(), replace = TRUE, prob = c(60, 40))) 
+    
+# Create plot. 
+ggplot2::ggplot(df_plt, aes(label = term, size = freq, angle=angle,
+                            colour = document)) +
+    ggwordcloud::geom_text_wordcloud(eccentricity=1) +
+    ggplot2::coord_equal() +
+    ggplot2::facet_wrap(~document, ncol = 3) +
+    ggplot2::scale_size_area(max_size = 10) +
+    ggplot2::theme_linedraw()
+```
 
 <div class="figure" style="text-align: center">
 <img src="01-document-comparison-with-nlp_files/figure-html/plt-wordcloud-1.png" alt="(ref:plt-wordcloud)" width="100%" />
@@ -280,12 +326,18 @@ Figure \@ref(fig:plt-commonality-cloud) shows plots a *commonality cloud*; this 
 
 (ref:plt-commonality-cloud) Commonality cloud.
 
+
+```r
+mat_plt <- as.matrix(tdm)
+wordcloud::commonality.cloud(mat_plt, max.words = 50) 
+```
+
 <div class="figure" style="text-align: center">
 <img src="01-document-comparison-with-nlp_files/figure-html/plt-commonality-cloud-1.png" alt="(ref:plt-commonality-cloud)" width="70%" />
 <p class="caption">(\#fig:plt-commonality-cloud)(ref:plt-commonality-cloud)</p>
 </div>
 
-The common words identified seem reasonable; the majority relate to general vocabularly that would be expected in legal preceedings.
+The common words identified seem reasonable; the majority relate to general vocabulary that would be expected in legal proceedings.
 
 ### Comparison Cloud
 
@@ -299,9 +351,27 @@ where $J$ number of documents in the corpus.  Then, in the *comparison cloud*, t
 
 (ref:plt-comparison-cloud) Comparison cloud.
 
+
+```r
+mat_plt <- as.matrix(tdm)
+
+# Compute colour scheme to match ggplot.
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
+}
+colors = gg_color_hue(3)
+
+# Plot comparison cloud.
+colnames(mat_plt) <- colnames(mat_plt) %>% str_replace("v", "v\n")
+wordcloud::comparison.cloud(mat_plt, scale = c(6, .2),
+                            colors = colors, max.words = 50,
+                            title.size = 1)
+```
+
 <div class="figure" style="text-align: center">
 <img src="01-document-comparison-with-nlp_files/figure-html/plt-comparison-cloud-1.png" alt="(ref:plt-comparison-cloud)" width="90%" />
 <p class="caption">(\#fig:plt-comparison-cloud)(ref:plt-comparison-cloud)</p>
 </div>
 
-This analysis is consistent with the keywords derived from the word frequency analysis, however, keywords that are common between documents are supressed i.e. are either not shown or are relatively smaller in size.
+This analysis is consistent with the keywords derived from the word frequency analysis, however, keywords that are common between documents are suppressed i.e. are either not shown or are relatively smaller in size.

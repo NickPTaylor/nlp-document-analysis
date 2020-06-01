@@ -1,7 +1,7 @@
 --- 
 title: "Applied NLP for Document Analysis"
 author: "Nick P Taylor"
-date: "2020-05-31"
+date: "2020-06-01"
 site: bookdown::bookdown_site
 output: bookdown::gitbook
 documentclass: book

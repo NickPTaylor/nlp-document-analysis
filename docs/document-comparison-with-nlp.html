@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Report 1 Document Comparison with NLP | Applied NLP for Document Analysis</title>
+  <title>Chapter 1 Document Comparison with NLP | Applied NLP for Document Analysis</title>
   <meta name="description" content="Bookdown report with examples of applied NLP for document analysis" />
   <meta name="generator" content="bookdown 0.19 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Report 1 Document Comparison with NLP | Applied NLP for Document Analysis" />
+  <meta property="og:title" content="Chapter 1 Document Comparison with NLP | Applied NLP for Document Analysis" />
   <meta property="og:type" content="book" />
   <meta property="og:url" content="http://https://nickptaylor.github.io/nlp-document-analysis/" />
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="nickptaylor/nlp-document-analysis" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Report 1 Document Comparison with NLP | Applied NLP for Document Analysis" />
+  <meta name="twitter:title" content="Chapter 1 Document Comparison with NLP | Applied NLP for Document Analysis" />
   
   <meta name="twitter:description" content="Bookdown report with examples of applied NLP for document analysis" />
   
@@ -24,7 +24,7 @@
 <meta name="author" content="Nick P Taylor" />
 
 
-<meta name="date" content="2020-05-31" />
+<meta name="date" content="2020-06-01" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +32,7 @@
   
   
 <link rel="prev" href="index.html"/>
-<link rel="next" href="references.html"/>
+<link rel="next" href="website-comparison-with-nlp.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -145,6 +145,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.5.3" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#comparison-cloud"><i class="fa fa-check"></i><b>1.5.3</b> Comparison Cloud</a></li>
 </ul></li>
 </ul></li>
+<li class="chapter" data-level="2" data-path="website-comparison-with-nlp.html"><a href="website-comparison-with-nlp.html"><i class="fa fa-check"></i><b>2</b> Website Comparison with NLP</a><ul>
+<li class="chapter" data-level="2.1" data-path="website-comparison-with-nlp.html"><a href="website-comparison-with-nlp.html#introduction-1"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="website-comparison-with-nlp.html"><a href="website-comparison-with-nlp.html#web-scraping"><i class="fa fa-check"></i><b>2.2</b> Web Scraping</a></li>
+<li class="chapter" data-level="2.3" data-path="website-comparison-with-nlp.html"><a href="website-comparison-with-nlp.html#tokenisation"><i class="fa fa-check"></i><b>2.3</b> Tokenisation</a></li>
+<li class="chapter" data-level="2.4" data-path="website-comparison-with-nlp.html"><a href="website-comparison-with-nlp.html#ssec:tfidf"><i class="fa fa-check"></i><b>2.4</b> Term-frequency Inverse Document-Frequency</a></li>
+<li class="chapter" data-level="2.5" data-path="website-comparison-with-nlp.html"><a href="website-comparison-with-nlp.html#word-clouds"><i class="fa fa-check"></i><b>2.5</b> Word Clouds</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -167,7 +174,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="document-comparison-with-nlp" class="section level1">
-<h1><span class="header-section-number">Report 1</span> Document Comparison with NLP</h1>
+<h1><span class="header-section-number">Chapter 1</span> Document Comparison with NLP</h1>
 <div id="introduction" class="section level2">
 <h2><span class="header-section-number">1.1</span> Introduction</h2>
 <p>Herein, an example of applying NLP to legal proceedings will be demonstrated. Legal documents are notoriously verbose and the objective will be to:</p>
@@ -298,23 +305,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Reduce words to ‘stems’.</li>
 </ul>
 <p>The last operation, reducing words to ‘stems’, is worthy of some explanation. Consider the words: ‘regulate’, ‘regulation’, ‘regulatory’. The word <em>stem</em> is ‘regulat’ i.e. the longest chain of common letters. It is often appropriate to aggregate words using their stems for analysis, since the full words are likely to covey similar information in the context of the document. After the transformations have been applied, the corpus is again inspected as a sanity check.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="document-comparison-with-nlp.html#cb4-1"></a>tidy_corpus &lt;-<span class="st"> </span>corpus <span class="op">%&gt;%</span></span>
-<span id="cb4-2"><a href="document-comparison-with-nlp.html#cb4-2"></a><span class="st">    </span>tm<span class="op">::</span><span class="kw">tm_map</span>(tm<span class="op">::</span>stripWhitespace) <span class="op">%&gt;%</span></span>
-<span id="cb4-3"><a href="document-comparison-with-nlp.html#cb4-3"></a><span class="st">    </span>tm<span class="op">::</span><span class="kw">tm_map</span>(tm<span class="op">::</span><span class="kw">content_transformer</span>(str_to_lower)) <span class="op">%&gt;%</span></span>
-<span id="cb4-4"><a href="document-comparison-with-nlp.html#cb4-4"></a><span class="st">    </span>tm<span class="op">::</span><span class="kw">tm_map</span>(tm<span class="op">::</span>removePunctuation, <span class="dt">ucp =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
-<span id="cb4-5"><a href="document-comparison-with-nlp.html#cb4-5"></a><span class="st">    </span>tm<span class="op">::</span><span class="kw">tm_map</span>(tm<span class="op">::</span>removeWords, <span class="kw">c</span>(tm<span class="op">::</span><span class="kw">stopwords</span>(<span class="st">&#39;english&#39;</span>), <span class="st">&#39;x&#39;</span>, <span class="st">&#39;figure&#39;</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb4-6"><a href="document-comparison-with-nlp.html#cb4-6"></a><span class="st">    </span>tm<span class="op">::</span><span class="kw">tm_map</span>(tm<span class="op">::</span>removeNumbers)</span>
-<span id="cb4-7"><a href="document-comparison-with-nlp.html#cb4-7"></a></span>
-<span id="cb4-8"><a href="document-comparison-with-nlp.html#cb4-8"></a><span class="co"># Before stemming, take a copy of the original corpus to un-stem words later.</span></span>
-<span id="cb4-9"><a href="document-comparison-with-nlp.html#cb4-9"></a>before_stem_corpus &lt;-<span class="st"> </span>tidy_corpus</span>
-<span id="cb4-10"><a href="document-comparison-with-nlp.html#cb4-10"></a>tidy_corpus <span class="op">%&lt;&gt;%</span><span class="st"> </span>tm<span class="op">::</span><span class="kw">tm_map</span>(stemDocument)</span>
-<span id="cb4-11"><a href="document-comparison-with-nlp.html#cb4-11"></a></span>
-<span id="cb4-12"><a href="document-comparison-with-nlp.html#cb4-12"></a><span class="co"># Inspect tidy corpus.</span></span>
-<span id="cb4-13"><a href="document-comparison-with-nlp.html#cb4-13"></a>tidy_corpus <span class="op">%&gt;%</span></span>
-<span id="cb4-14"><a href="document-comparison-with-nlp.html#cb4-14"></a><span class="st">    </span>purrr<span class="op">::</span><span class="kw">map_chr</span>(as.character) <span class="op">%&gt;%</span></span>
-<span id="cb4-15"><a href="document-comparison-with-nlp.html#cb4-15"></a><span class="st">    </span>purrr<span class="op">::</span><span class="kw">map_chr</span>(str_trunc, <span class="dv">500</span>, <span class="st">&#39;center&#39;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb4-16"><a href="document-comparison-with-nlp.html#cb4-16"></a><span class="st">    </span>purrr<span class="op">::</span><span class="kw">map_chr</span>(str_wrap, <span class="dv">60</span>) <span class="op">%&gt;%</span></span>
-<span id="cb4-17"><a href="document-comparison-with-nlp.html#cb4-17"></a><span class="st">    </span><span class="kw">cat</span>(<span class="dt">sep =</span> <span class="st">&#39;</span><span class="ch">\n</span><span class="st">--------</span><span class="ch">\n</span><span class="st">&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="document-comparison-with-nlp.html#cb4-1"></a><span class="co"># Pre-processing steps.</span></span>
+<span id="cb4-2"><a href="document-comparison-with-nlp.html#cb4-2"></a>tidy_corpus &lt;-<span class="st"> </span>corpus <span class="op">%&gt;%</span></span>
+<span id="cb4-3"><a href="document-comparison-with-nlp.html#cb4-3"></a><span class="st">    </span>tm<span class="op">::</span><span class="kw">tm_map</span>(tm<span class="op">::</span>stripWhitespace) <span class="op">%&gt;%</span></span>
+<span id="cb4-4"><a href="document-comparison-with-nlp.html#cb4-4"></a><span class="st">    </span>tm<span class="op">::</span><span class="kw">tm_map</span>(tm<span class="op">::</span><span class="kw">content_transformer</span>(str_to_lower)) <span class="op">%&gt;%</span></span>
+<span id="cb4-5"><a href="document-comparison-with-nlp.html#cb4-5"></a><span class="st">    </span>tm<span class="op">::</span><span class="kw">tm_map</span>(tm<span class="op">::</span>removePunctuation, <span class="dt">ucp =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
+<span id="cb4-6"><a href="document-comparison-with-nlp.html#cb4-6"></a><span class="st">    </span>tm<span class="op">::</span><span class="kw">tm_map</span>(tm<span class="op">::</span>removeWords, <span class="kw">c</span>(tm<span class="op">::</span><span class="kw">stopwords</span>(<span class="st">&#39;english&#39;</span>), <span class="st">&#39;x&#39;</span>, <span class="st">&#39;figure&#39;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb4-7"><a href="document-comparison-with-nlp.html#cb4-7"></a><span class="st">    </span>tm<span class="op">::</span><span class="kw">tm_map</span>(tm<span class="op">::</span>removeNumbers)</span>
+<span id="cb4-8"><a href="document-comparison-with-nlp.html#cb4-8"></a></span>
+<span id="cb4-9"><a href="document-comparison-with-nlp.html#cb4-9"></a><span class="co"># Before stemming, take a copy of the original corpus to un-stem words later.</span></span>
+<span id="cb4-10"><a href="document-comparison-with-nlp.html#cb4-10"></a>before_stem_corpus &lt;-<span class="st"> </span>tidy_corpus</span>
+<span id="cb4-11"><a href="document-comparison-with-nlp.html#cb4-11"></a>tidy_corpus <span class="op">%&lt;&gt;%</span><span class="st"> </span>tm<span class="op">::</span><span class="kw">tm_map</span>(stemDocument)</span>
+<span id="cb4-12"><a href="document-comparison-with-nlp.html#cb4-12"></a></span>
+<span id="cb4-13"><a href="document-comparison-with-nlp.html#cb4-13"></a><span class="co"># Inspect tidy corpus.</span></span>
+<span id="cb4-14"><a href="document-comparison-with-nlp.html#cb4-14"></a>tidy_corpus <span class="op">%&gt;%</span></span>
+<span id="cb4-15"><a href="document-comparison-with-nlp.html#cb4-15"></a><span class="st">    </span>purrr<span class="op">::</span><span class="kw">map_chr</span>(as.character) <span class="op">%&gt;%</span></span>
+<span id="cb4-16"><a href="document-comparison-with-nlp.html#cb4-16"></a><span class="st">    </span>purrr<span class="op">::</span><span class="kw">map_chr</span>(str_trunc, <span class="dv">500</span>, <span class="st">&#39;center&#39;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb4-17"><a href="document-comparison-with-nlp.html#cb4-17"></a><span class="st">    </span>purrr<span class="op">::</span><span class="kw">map_chr</span>(str_wrap, <span class="dv">60</span>) <span class="op">%&gt;%</span></span>
+<span id="cb4-18"><a href="document-comparison-with-nlp.html#cb4-18"></a><span class="st">    </span><span class="kw">cat</span>(<span class="dt">sep =</span> <span class="st">&#39;</span><span class="ch">\n</span><span class="st">--------</span><span class="ch">\n</span><span class="st">&#39;</span>)</span></code></pre></div>
 <pre><code>## lord justic patten school site act act pass order encourag
 ## facilit provis one acr land use site school educ poor person
 ## resid schoolmast schoolmistress otherwis purpos educ poor
@@ -354,14 +362,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-3"><a href="document-comparison-with-nlp.html#cb6-3"></a>tdm<span class="op">$</span>dimnames<span class="op">$</span>Terms &lt;-tm<span class="op">::</span><span class="kw">stemCompletion</span>(tdm<span class="op">$</span>dimnames<span class="op">$</span>Terms,</span>
 <span id="cb6-4"><a href="document-comparison-with-nlp.html#cb6-4"></a>                                        before_stem_corpus)</span>
 <span id="cb6-5"><a href="document-comparison-with-nlp.html#cb6-5"></a></span>
-<span id="cb6-6"><a href="document-comparison-with-nlp.html#cb6-6"></a>df_tdm &lt;-<span class="st"> </span>tdm <span class="op">%&gt;%</span></span>
-<span id="cb6-7"><a href="document-comparison-with-nlp.html#cb6-7"></a><span class="st">    </span><span class="kw">as.matrix</span>() <span class="op">%&gt;%</span></span>
-<span id="cb6-8"><a href="document-comparison-with-nlp.html#cb6-8"></a><span class="st">    </span>tibble<span class="op">::</span><span class="kw">as_tibble</span>(<span class="dt">rownames =</span> <span class="st">&#39;term&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb6-9"><a href="document-comparison-with-nlp.html#cb6-9"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(term <span class="op">!=</span><span class="st"> &quot;&quot;</span>)</span>
-<span id="cb6-10"><a href="document-comparison-with-nlp.html#cb6-10"></a></span>
-<span id="cb6-11"><a href="document-comparison-with-nlp.html#cb6-11"></a><span class="co"># Output random sample of TDM.</span></span>
-<span id="cb6-12"><a href="document-comparison-with-nlp.html#cb6-12"></a>df_tdm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>()</span>
-<span id="cb6-13"><a href="document-comparison-with-nlp.html#cb6-13"></a>df_tdm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tail</span>()</span></code></pre></div>
+<span id="cb6-6"><a href="document-comparison-with-nlp.html#cb6-6"></a><span class="co"># Create term document data frame.</span></span>
+<span id="cb6-7"><a href="document-comparison-with-nlp.html#cb6-7"></a>df_tdm &lt;-<span class="st"> </span>tdm <span class="op">%&gt;%</span></span>
+<span id="cb6-8"><a href="document-comparison-with-nlp.html#cb6-8"></a><span class="st">    </span><span class="kw">as.matrix</span>() <span class="op">%&gt;%</span></span>
+<span id="cb6-9"><a href="document-comparison-with-nlp.html#cb6-9"></a><span class="st">    </span>tibble<span class="op">::</span><span class="kw">as_tibble</span>(<span class="dt">rownames =</span> <span class="st">&#39;term&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-10"><a href="document-comparison-with-nlp.html#cb6-10"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(term <span class="op">!=</span><span class="st"> &quot;&quot;</span>)</span>
+<span id="cb6-11"><a href="document-comparison-with-nlp.html#cb6-11"></a></span>
+<span id="cb6-12"><a href="document-comparison-with-nlp.html#cb6-12"></a><span class="co"># Output head/tail of TDM.</span></span>
+<span id="cb6-13"><a href="document-comparison-with-nlp.html#cb6-13"></a>df_tdm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>()</span>
+<span id="cb6-14"><a href="document-comparison-with-nlp.html#cb6-14"></a>df_tdm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tail</span>()</span></code></pre></div>
 <pre><code>## # A tibble: 6 x 4
 ##   term    `Rittson-Thomas v Oxfordsh… `Kingsley v King… `Vodafone Ltd v Office …
 ##   &lt;chr&gt;                         &lt;dbl&gt;             &lt;dbl&gt;                    &lt;dbl&gt;
@@ -385,12 +394,31 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">1.5</span> Exploratory Analysis</h2>
 <div id="word-frequency" class="section level3">
 <h3><span class="header-section-number">1.5.1</span> Word Frequency</h3>
-<p>Figure <a href="document-comparison-with-nlp.html#fig:plt-word-freq">1.1</a> shows the top words in each document as a bar plot. The word frequencies have been normalised by the total number of words in the corpus i.e.</p>
+<p>Figure <a href="document-comparison-with-nlp.html#fig:plt-word-freq">1.1</a> shows the top words in each document as a bar plot. The word frequencies have been normalised by computing the <em>term frequency</em>:</p>
 <p><span class="math display">\[
-\bar{f}_{i,j}  = \frac{f_{i,j}}{\sum_{i=1}^{I_j} f_{i,j}}
+\mathrm{TF}_{i,j} = \frac{N_{i,j}}{\sum_{k=1}^{K} N_{k,j}}.
 \]</span></p>
-<p>where <span class="math inline">\(\bar{f_{i,j}}\)</span> and <span class="math inline">\(f_{i,j}\)</span> are the normalised and un-normalised word frequencies for word <span class="math inline">\(i\)</span> in document <span class="math inline">\(j\)</span> respectively and <span class="math inline">\(I_j\)</span> is the number of words in document <span class="math inline">\(j\)</span>. The normalisation corrects for the fact that word frequencies would be expected to scale with the size of the document which would inflate the perceived importance of the word.</p>
+<p><span class="math inline">\(N_{i, j}\)</span> denotes the word count for the <span class="math inline">\(i\)</span>th word in the <span class="math inline">\(j\)</span>th document and <span class="math inline">\(K\)</span> iterates through each word in document <span class="math inline">\(j\)</span>. The normalisation corrects for the fact that word frequencies would be expected to scale with the size of the document which would inflate the perceived importance of the word.</p>
 
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="document-comparison-with-nlp.html#cb8-1"></a><span class="co"># Prepare plot data.</span></span>
+<span id="cb8-2"><a href="document-comparison-with-nlp.html#cb8-2"></a>df_plt &lt;-<span class="st"> </span>df_tdm <span class="op">%&gt;%</span></span>
+<span id="cb8-3"><a href="document-comparison-with-nlp.html#cb8-3"></a><span class="st">    </span>tidyr<span class="op">::</span><span class="kw">pivot_longer</span>(<span class="op">-</span>term, <span class="dt">names_to =</span> <span class="st">&#39;document&#39;</span>, <span class="dt">values_to =</span> <span class="st">&#39;freq&#39;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb8-4"><a href="document-comparison-with-nlp.html#cb8-4"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(document) <span class="op">%&gt;%</span></span>
+<span id="cb8-5"><a href="document-comparison-with-nlp.html#cb8-5"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">freq =</span> freq <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(freq)) <span class="op">%&gt;%</span></span>
+<span id="cb8-6"><a href="document-comparison-with-nlp.html#cb8-6"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">top_n</span>(<span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">wt =</span> freq) <span class="op">%&gt;%</span></span>
+<span id="cb8-7"><a href="document-comparison-with-nlp.html#cb8-7"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">term =</span> tidytext<span class="op">::</span><span class="kw">reorder_within</span>(term, freq, document))</span>
+<span id="cb8-8"><a href="document-comparison-with-nlp.html#cb8-8"></a></span>
+<span id="cb8-9"><a href="document-comparison-with-nlp.html#cb8-9"></a><span class="co"># Create plot.</span></span>
+<span id="cb8-10"><a href="document-comparison-with-nlp.html#cb8-10"></a>ggplot2<span class="op">::</span><span class="kw">ggplot</span>(df_plt, <span class="kw">aes</span>(<span class="dt">x =</span> term, <span class="dt">y =</span> freq, <span class="dt">fill =</span> document)) <span class="op">+</span></span>
+<span id="cb8-11"><a href="document-comparison-with-nlp.html#cb8-11"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">geom_col</span>() <span class="op">+</span></span>
+<span id="cb8-12"><a href="document-comparison-with-nlp.html#cb8-12"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">coord_flip</span>() <span class="op">+</span></span>
+<span id="cb8-13"><a href="document-comparison-with-nlp.html#cb8-13"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">labs</span>(</span>
+<span id="cb8-14"><a href="document-comparison-with-nlp.html#cb8-14"></a>         <span class="dt">x =</span> <span class="st">&#39;Word&#39;</span>,</span>
+<span id="cb8-15"><a href="document-comparison-with-nlp.html#cb8-15"></a>         <span class="dt">y =</span> latex2exp<span class="op">::</span><span class="kw">TeX</span>(<span class="st">&#39;Normalised frequency, $</span><span class="ch">\\</span><span class="st">bar{f}$&#39;</span>)) <span class="op">+</span></span>
+<span id="cb8-16"><a href="document-comparison-with-nlp.html#cb8-16"></a><span class="st">    </span>tidytext<span class="op">::</span><span class="kw">scale_x_reordered</span>() <span class="op">+</span></span>
+<span id="cb8-17"><a href="document-comparison-with-nlp.html#cb8-17"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">facet_wrap</span>(<span class="op">~</span>document, <span class="dt">ncol =</span> <span class="dv">1</span>, <span class="dt">scales =</span> <span class="st">&#39;free_y&#39;</span>) <span class="op">+</span></span>
+<span id="cb8-18"><a href="document-comparison-with-nlp.html#cb8-18"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">scale_fill_discrete</span>(<span class="dt">guide=</span><span class="ot">FALSE</span>) <span class="op">+</span></span>
+<span id="cb8-19"><a href="document-comparison-with-nlp.html#cb8-19"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_linedraw</span>()</span></code></pre></div>
 <div class="figure" style="text-align: center"><span id="fig:plt-word-freq"></span>
 <img src="01-document-comparison-with-nlp_files/figure-html/plt-word-freq-1.png" alt="Bar plots of term frequencies." width="70%" />
 <p class="caption">
@@ -399,6 +427,23 @@ Figure 1.1: Bar plots of term frequencies.
 </div>
 <p>An alternative way to present this information is as a <em>wordcloud</em>, as shown in figure <a href="document-comparison-with-nlp.html#fig:plt-wordcloud">1.2</a>. Here, the word frequency is mapped to the size of the word depicted in the cloud.</p>
 
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="document-comparison-with-nlp.html#cb9-1"></a><span class="co"># Prepare plot data.</span></span>
+<span id="cb9-2"><a href="document-comparison-with-nlp.html#cb9-2"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb9-3"><a href="document-comparison-with-nlp.html#cb9-3"></a>df_plt &lt;-<span class="st"> </span>df_tdm <span class="op">%&gt;%</span></span>
+<span id="cb9-4"><a href="document-comparison-with-nlp.html#cb9-4"></a><span class="st">    </span>tidyr<span class="op">::</span><span class="kw">pivot_longer</span>(<span class="op">-</span>term, <span class="dt">names_to =</span> <span class="st">&#39;document&#39;</span>, <span class="dt">values_to =</span> <span class="st">&#39;freq&#39;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb9-5"><a href="document-comparison-with-nlp.html#cb9-5"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(document) <span class="op">%&gt;%</span></span>
+<span id="cb9-6"><a href="document-comparison-with-nlp.html#cb9-6"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">freq =</span> freq <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(freq)) <span class="op">%&gt;%</span></span>
+<span id="cb9-7"><a href="document-comparison-with-nlp.html#cb9-7"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">top_n</span>(<span class="dt">n =</span> <span class="dv">40</span>, <span class="dt">wt =</span> freq) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-8"><a href="document-comparison-with-nlp.html#cb9-8"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">angle =</span> <span class="dv">90</span> <span class="op">*</span><span class="st"> </span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="kw">n</span>(), <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="kw">c</span>(<span class="dv">60</span>, <span class="dv">40</span>))) </span>
+<span id="cb9-9"><a href="document-comparison-with-nlp.html#cb9-9"></a>    </span>
+<span id="cb9-10"><a href="document-comparison-with-nlp.html#cb9-10"></a><span class="co"># Create plot. </span></span>
+<span id="cb9-11"><a href="document-comparison-with-nlp.html#cb9-11"></a>ggplot2<span class="op">::</span><span class="kw">ggplot</span>(df_plt, <span class="kw">aes</span>(<span class="dt">label =</span> term, <span class="dt">size =</span> freq, <span class="dt">angle=</span>angle,</span>
+<span id="cb9-12"><a href="document-comparison-with-nlp.html#cb9-12"></a>                            <span class="dt">colour =</span> document)) <span class="op">+</span></span>
+<span id="cb9-13"><a href="document-comparison-with-nlp.html#cb9-13"></a><span class="st">    </span>ggwordcloud<span class="op">::</span><span class="kw">geom_text_wordcloud</span>(<span class="dt">eccentricity=</span><span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb9-14"><a href="document-comparison-with-nlp.html#cb9-14"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">coord_equal</span>() <span class="op">+</span></span>
+<span id="cb9-15"><a href="document-comparison-with-nlp.html#cb9-15"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">facet_wrap</span>(<span class="op">~</span>document, <span class="dt">ncol =</span> <span class="dv">3</span>) <span class="op">+</span></span>
+<span id="cb9-16"><a href="document-comparison-with-nlp.html#cb9-16"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">10</span>) <span class="op">+</span></span>
+<span id="cb9-17"><a href="document-comparison-with-nlp.html#cb9-17"></a><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_linedraw</span>()</span></code></pre></div>
 <div class="figure" style="text-align: center"><span id="fig:plt-wordcloud"></span>
 <img src="01-document-comparison-with-nlp_files/figure-html/plt-wordcloud-1.png" alt="Word cloud for each document." width="100%" />
 <p class="caption">
@@ -411,13 +456,15 @@ Figure 1.2: Word cloud for each document.
 <h3><span class="header-section-number">1.5.2</span> Commonality Cloud</h3>
 <p>Figure <a href="document-comparison-with-nlp.html#fig:plt-commonality-cloud">1.3</a> shows plots a <em>commonality cloud</em>; this is the combined word cloud for the entire corpus where each term is normalised by the document word count. Therefore, the commonality cloud depicts words that are <em>common</em> across all documents in the corpus. The commonality cloud is plotted using the <code>wordcloud</code> package <span class="citation">(Fellows <a href="#ref-R-wordcloud" role="doc-biblioref">2018</a>)</span>.</p>
 
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="document-comparison-with-nlp.html#cb10-1"></a>mat_plt &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(tdm)</span>
+<span id="cb10-2"><a href="document-comparison-with-nlp.html#cb10-2"></a>wordcloud<span class="op">::</span><span class="kw">commonality.cloud</span>(mat_plt, <span class="dt">max.words =</span> <span class="dv">50</span>) </span></code></pre></div>
 <div class="figure" style="text-align: center"><span id="fig:plt-commonality-cloud"></span>
 <img src="01-document-comparison-with-nlp_files/figure-html/plt-commonality-cloud-1.png" alt="Commonality cloud." width="70%" />
 <p class="caption">
 Figure 1.3: Commonality cloud.
 </p>
 </div>
-<p>The common words identified seem reasonable; the majority relate to general vocabularly that would be expected in legal preceedings.</p>
+<p>The common words identified seem reasonable; the majority relate to general vocabulary that would be expected in legal proceedings.</p>
 </div>
 <div id="comparison-cloud" class="section level3">
 <h3><span class="header-section-number">1.5.3</span> Comparison Cloud</h3>
@@ -427,13 +474,27 @@ Figure 1.3: Commonality cloud.
 \]</span></p>
 <p>where <span class="math inline">\(J\)</span> number of documents in the corpus. Then, in the <em>comparison cloud</em>, the size of of the word is mapped to the maximum deviation i.e. <span class="math inline">\(\max_i(p_{i,j}-\bar{p}_i)\)</span> and the position corresponds to the document in which the maximum occurs. In other words, the words shown are cases where a particular document contains many instances of the word whereas the other documents do not. The comparison cloud is plotted using the <code>wordcloud</code> package <span class="citation">(Fellows <a href="#ref-R-wordcloud" role="doc-biblioref">2018</a>)</span>.</p>
 
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="document-comparison-with-nlp.html#cb11-1"></a>mat_plt &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(tdm)</span>
+<span id="cb11-2"><a href="document-comparison-with-nlp.html#cb11-2"></a></span>
+<span id="cb11-3"><a href="document-comparison-with-nlp.html#cb11-3"></a><span class="co"># Compute colour scheme to match ggplot.</span></span>
+<span id="cb11-4"><a href="document-comparison-with-nlp.html#cb11-4"></a>gg_color_hue &lt;-<span class="st"> </span><span class="cf">function</span>(n) {</span>
+<span id="cb11-5"><a href="document-comparison-with-nlp.html#cb11-5"></a>  hues =<span class="st"> </span><span class="kw">seq</span>(<span class="dv">15</span>, <span class="dv">375</span>, <span class="dt">length =</span> n <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb11-6"><a href="document-comparison-with-nlp.html#cb11-6"></a>  <span class="kw">hcl</span>(<span class="dt">h =</span> hues, <span class="dt">l =</span> <span class="dv">65</span>, <span class="dt">c =</span> <span class="dv">100</span>)[<span class="dv">1</span><span class="op">:</span>n]</span>
+<span id="cb11-7"><a href="document-comparison-with-nlp.html#cb11-7"></a>}</span>
+<span id="cb11-8"><a href="document-comparison-with-nlp.html#cb11-8"></a>colors =<span class="st"> </span><span class="kw">gg_color_hue</span>(<span class="dv">3</span>)</span>
+<span id="cb11-9"><a href="document-comparison-with-nlp.html#cb11-9"></a></span>
+<span id="cb11-10"><a href="document-comparison-with-nlp.html#cb11-10"></a><span class="co"># Plot comparison cloud.</span></span>
+<span id="cb11-11"><a href="document-comparison-with-nlp.html#cb11-11"></a><span class="kw">colnames</span>(mat_plt) &lt;-<span class="st"> </span><span class="kw">colnames</span>(mat_plt) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">str_replace</span>(<span class="st">&quot;v&quot;</span>, <span class="st">&quot;v</span><span class="ch">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb11-12"><a href="document-comparison-with-nlp.html#cb11-12"></a>wordcloud<span class="op">::</span><span class="kw">comparison.cloud</span>(mat_plt, <span class="dt">scale =</span> <span class="kw">c</span>(<span class="dv">6</span>, <span class="fl">.2</span>),</span>
+<span id="cb11-13"><a href="document-comparison-with-nlp.html#cb11-13"></a>                            <span class="dt">colors =</span> colors, <span class="dt">max.words =</span> <span class="dv">50</span>,</span>
+<span id="cb11-14"><a href="document-comparison-with-nlp.html#cb11-14"></a>                            <span class="dt">title.size =</span> <span class="dv">1</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span id="fig:plt-comparison-cloud"></span>
 <img src="01-document-comparison-with-nlp_files/figure-html/plt-comparison-cloud-1.png" alt="Comparison cloud." width="90%" />
 <p class="caption">
 Figure 1.4: Comparison cloud.
 </p>
 </div>
-<p>This analysis is consistent with the keywords derived from the word frequency analysis, however, keywords that are common between documents are supressed i.e. are either not shown or are relatively smaller in size.</p>
+<p>This analysis is consistent with the keywords derived from the word frequency analysis, however, keywords that are common between documents are suppressed i.e. are either not shown or are relatively smaller in size.</p>
 
 </div>
 </div>
@@ -462,7 +523,7 @@ Figure 1.4: Comparison cloud.
         </div>
       </div>
 <a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="website-comparison-with-nlp.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
