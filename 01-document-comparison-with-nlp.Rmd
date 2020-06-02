@@ -83,7 +83,7 @@ The fields in the JSON are:
 * `use_fonts`: The font heights of the text that this to be processed
 * `page_range`: The range of pages to process
 
-Due to the nature of PDF documents, some preliminary inspection is required to determine the fonts size for the `use_fonts` field i.e. the text that contains the informative content rather than headers/footers, title, etc.  This inspection was performed using the `pdf_data` function from `pdftools` package [@R-pdftools].
+Due to the nature of PDF documents, some preliminary inspection is required to determine the fonts size for the `use_fonts` field i.e. the text that contains the informative content rather than headers/footers, title, etc.  This inspection was performed using the `pdf_data` function from `pdftools` package [@R-pdftools].  See \@ref(ch:advanced-pdf-parsing) for more detail.
 
 A utility function (`extract_text`) is defined which takes the fields from the JSON objects as arguments and performs the necessary operations to download the PDF documents and extract the required text.  The utility function returns a `data.frame` with 2 columns:
 
@@ -110,7 +110,7 @@ extract_text <- function(name, url, use_fonts = NULL,
         dplyr::mutate(page = as.integer(page)) %>%
         dplyr::filter(between(page, page_range[1], page_range[2]))
     if (!is.null(use_fonts)) {
-        text <- text %>% 
+        text <- text %>%
             dplyr::filter(height %in% use_fonts)
     }
 
@@ -183,13 +183,13 @@ In the chunk below, a TDM object is created and it is also transformed to a data
 ```{r tdm, cache=TRUE, results='hold'}
 # Compute term document matrix.
 tdm <- tm::TermDocumentMatrix(tidy_corpus)
-tdm$dimnames$Terms <-tm::stemCompletion(tdm$dimnames$Terms,
+tdm$dimnames$Terms <- tm::stemCompletion(tdm$dimnames$Terms,
                                         before_stem_corpus)
 
 # Create term document data frame.
 df_tdm <- tdm %>%
     as.matrix() %>%
-    tibble::as_tibble(rownames = 'term') %>% 
+    tibble::as_tibble(rownames = 'term') %>%
     dplyr::filter(term != "")
 
 # Output head/tail of TDM.
@@ -201,7 +201,7 @@ df_tdm %>% tail()
 
 ### Word Frequency
 
-Figure \@ref(fig:plt-word-freq) shows the top words in each document as a bar plot.  The word frequencies have been normalised by computing the *term frequency*: 
+Figure \@ref(fig:plt-word-freq) shows the top words in each document as a bar plot.  The word frequencies have been normalised by computing the *term frequency*:
 
 $$
 \mathrm{TF}_{i,j} = \frac{N_{i,j}}{\sum_{k=1}^{K} N_{k,j}}.
@@ -229,10 +229,10 @@ ggplot2::ggplot(df_plt, aes(x = term, y = freq, fill = document)) +
          y = latex2exp::TeX('Normalised frequency, $\\bar{f}$')) +
     tidytext::scale_x_reordered() +
     ggplot2::facet_wrap(~document, ncol = 1, scales = 'free_y') +
-    ggplot2::scale_fill_discrete(guide=FALSE) +
+    ggplot2::scale_fill_discrete(guide = FALSE) +
     ggplot2::theme_linedraw()
 ```
-An alternative way to present this information is as a *wordcloud*, as shown in figure \@ref(fig:plt-wordcloud).  Here, the word frequency is mapped to the size of the word depicted in the cloud.  
+An alternative way to present this information is as a *wordcloud*, as shown in figure \@ref(fig:plt-wordcloud).  Here, the word frequency is mapped to the size of the word depicted in the cloud.
 
 (ref:plt-wordcloud) Word cloud for each document.
 
@@ -243,13 +243,13 @@ df_plt <- df_tdm %>%
     tidyr::pivot_longer(-term, names_to = 'document', values_to = 'freq') %>%
     dplyr::group_by(document) %>%
     dplyr::mutate(freq = freq / sum(freq)) %>%
-    dplyr::top_n(n = 40, wt = freq) %>% 
-    mutate(angle = 90 * sample(c(0, 1), n(), replace = TRUE, prob = c(60, 40))) 
-    
-# Create plot. 
-ggplot2::ggplot(df_plt, aes(label = term, size = freq, angle=angle,
+    dplyr::top_n(n = 40, wt = freq) %>%
+    mutate(angle = 90 * sample(c(0, 1), n(), replace = TRUE, prob = c(60, 40)))
+
+# Create plot.
+ggplot2::ggplot(df_plt, aes(label = term, size = freq, angle = angle,
                             colour = document)) +
-    ggwordcloud::geom_text_wordcloud(eccentricity=1) +
+    ggwordcloud::geom_text_wordcloud(eccentricity = 1) +
     ggplot2::coord_equal() +
     ggplot2::facet_wrap(~document, ncol = 3) +
     ggplot2::scale_size_area(max_size = 10) +
@@ -266,7 +266,7 @@ Figure \@ref(fig:plt-commonality-cloud) shows plots a *commonality cloud*; this 
 
 ```{r plt-commonality-cloud, fig.asp=1, fig.cap='(ref:plt-commonality-cloud)'}
 mat_plt <- as.matrix(tdm)
-wordcloud::commonality.cloud(mat_plt, max.words = 50) 
+wordcloud::commonality.cloud(mat_plt, max.words = 50)
 ```
 
 The common words identified seem reasonable; the majority relate to general vocabulary that would be expected in legal proceedings.

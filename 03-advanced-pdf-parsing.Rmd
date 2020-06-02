@@ -1,0 +1,167 @@
+# Advanced PDF Parsing {#ch:advanced-pdf-parsing}
+
+```{r setup, include=FALSE}
+# knitr options -----------------------------------------------------------
+knitr::opts_chunk$set(
+    fig.width = 6,
+    fig.asp = 0.618,
+    out.width = "70%",
+    fig.align = "center"
+)
+
+# Initialisation ----------------------------------------------------------
+
+library(kableExtra)
+library(tidyverse)
+library(magrittr)
+library(pdftools)
+library(tidytext)
+
+HEADING_SIZE <- 22
+LAST_PAGE <- Inf
+```
+
+## Introduction
+
+### Objective
+
+This report addresses the objective:
+
+> Given a large PDF document with several chapters/sections, apply NLP (Natural Language Processing) techniques to each *section* in order to gain insight into the content of each section.
+
+The document being considered for this example is [Shakespeare's Macbeth](https://www.williamshakespeare.net/pdf/macbeth.pdf) and the objective is to split the document into a corpus of sections.
+
+### HTML Documents
+
+Parsing an HTML (Hyper-text Markup Language) document i.e. a web page by section is relatively easy since the HTML markup language explicitly encodes the structure of the document i.e. HTML directly specifies whether each item of text is a heading, paragraph, list, etc.  Headings are typically enclosed by one of six HTML markup tags i.e. `<h1>`, `<h2>`, etc. wherein the number succeeding the 'h' reflects the hierarchical importance of the heading.  For example, `<h1>` tags may reflect a 'title' heading, `<h1>` a 'chapter', `<h2>` a section and so forth.  HTML only describes the *structure* of the document; the *formatting* of the document, describing how the text is rendered is (usually) described elsewhere e.g. a CSS (Cascading Style Sheet) file.
+
+### PDF Documents
+
+The raw encoding for a PDF document is fundamentally different to that of an HTML document.  Whereas the raw code for HTML contains the document content and explicit encoding of the document *structure*, a PDF document describes the content and the *formatting* e.g. font style, font size, character location, etc.  The structure is therefore implicit, rather than explicit and it is only possible to *infer* the structural aspects of the document from the code describing the formatting of the document.  For example, if an item of text is formatted to be rendered with a large font, it could be inferred that the text is a 'title' heading.  In this report, a method for parsing a PDF document will be described.  The method is facilitated by the `pdftools` package [@R-pdftools]^[The `pdftools` library requires the `poppler` development library.  Installation instructions are described [here](https://ropensci.org/blog/2016/03/01/pdftools-and-jeroen/).]. 
+
+## Method
+
+### Read Document
+
+Using `pdftools::pdf_data` the document is read, word-by-word.  For later convenience, the document *line number* of each word is computed and included with the data.  The first and last words of extracted raw data are inspected:
+
+```{r df-doc-data-raw, results='hold'}
+# Download document to temporary location.
+destfile = tempfile('macbeth', fileext = '.pdf')
+download.file(url = 'https://www.williamshakespeare.net/pdf/macbeth.pdf',
+              destfile = destfile, quiet = TRUE)
+
+# Read metadata.
+df_doc_data_raw <- pdftools::pdf_data(destfile) %>%
+    dplyr::bind_rows(.id = 'page') %>%
+    dplyr::mutate(page = as.integer(page)) %>%
+    dplyr::mutate(text = text %>%
+        stringr::str_remove_all('[^[:print:]]+') %>%
+        stringr::str_squish())
+
+# Remove temporary file.
+unlink(destfile)
+
+# Compute line numbers.
+line_no <- df_doc_data_raw %>%
+    dplyr::distinct(page, y) %>%
+    dplyr::arrange(page, y) %>%
+    dplyr::mutate(doc_line = row_number())
+
+df_doc_data_raw %<>%
+    dplyr::left_join(line_no, by = c('page', 'y'))
+
+# Print.
+df_doc_data_raw %>% head()
+df_doc_data_raw %>% tail()
+```
+
+The extracted metadata is:
+
+* `text`: the word
+* `page`: the page that the word occurs on
+* `width`: the width of the word i.e. font width
+* `height`: the height of the word i.e. font height
+* `x`: the horizontal location of the word on the page
+* `y`: the vertical location of the word on the page
+* `space`: whether the word should have a space appended
+
+The line number, `doc_line`, is computed from the raw metadata by identifying unique combinations of `page` and `y`.  As stated above, the word metadata demonstrates that the internal representation of a PDF combines the description of the *formatting* and the *content* and does not explicitly describe the *structure*.
+
+### Identify Headings
+
+It may be possible to extract further metadata relating to each word such as font type; however, this has not been explored presently.  For the method described herein, the word *height* is used to identify candidate words that *may* be section heading content.  Some exploration indicated that words that are of height `r HEADING_SIZE` are likely to be section headings for the document being analysed:
+
+```{r print-height-24}
+df_doc_data_raw %>%
+    dplyr::filter(height == HEADING_SIZE)
+```
+
+The raw data frame contains a row for each word.  The objective of the following code is to traverse the data frame above and derive groups of words that form each individual section headings.  This is achieved by first filtering words that have the section heading height.   Subsequently, by joining these filtered words that either occur on the same line or on consecutive lines, section headings can be inferred.  It is necessary to consider consecutive lines since it is possible that long section headings contain a line break although this does not occur in the current document.
+
+The procedure in the code block below is:
+
+* Filter words with a height matching the section heading height.
+* Identify whether the words in the next row(s) are also part of the same heading i.e. on the same or consecutive lines in the document.
+* Assign a unique ID to words belonging to the same heading.
+* Concatenate words belonging to the same heading.
+
+```{r df-doc-headings}
+# Derive headings.
+df_headings <- df_doc_data_raw %>%
+    # Filter words that make up headings.
+    dplyr::filter(height == HEADING_SIZE) %>%
+    # Group words that form each heading and assign head_ID.
+    dplyr::mutate(doc_line_diff = doc_line - lag(doc_line, default = )) %>%
+    dplyr::mutate(doc_line_diff = doc_line - lag(doc_line)) %>%
+    tidyr::replace_na(list(doc_line_diff = -1)) %>%
+    dplyr::mutate(head_id = cumsum(doc_line_diff > 1)) %>%
+    # Concatenate words with the same head_ID.
+    dplyr::group_by(head_id) %>%
+    dplyr::summarise(doc_line = first(doc_line),
+                     page = first(page),
+                     heading = str_c(text, collapse = " "), .groups = 'drop')
+
+df_headings
+```
+
+The reader may refer to the [imported document](https://www.williamshakespeare.net/pdf/macbeth.pdf), to confirm that the section headings are correctly captured here.  The section heading words can now be joined to the raw data.  The procedure in the following code chunk is:
+
+* Select the required metadata.
+* Join the section headings derived above to the first word of each section in the raw data.
+* Fill the section headings forwards so that the text between heading A and heading B is assigned to heading A.
+
+Note that the last page (of the last section) should be assigned otherwise the last the section will be assumed to continue until the end of the text.
+
+```{r df-doc-data}
+# Assign headings to raw data.
+df_doc_data <- df_doc_data_raw %>%
+    dplyr::select(page, doc_line, text) %>%
+    dplyr::filter(page <= LAST_PAGE) %>%
+    # Merge headings.
+    dplyr::left_join(df_headings, by = c('page', 'doc_line')) %>%
+    # Fill headings forward
+    tidyr::fill(heading, head_id) %>%
+    tidyr::drop_na()
+```
+
+### Corpus by Heading
+
+Finally, the data frame is grouped by section and the words within the section are concatenated to form the document corpus.
+
+```{r df-corpus}
+df_corpus <- df_doc_data %>%
+    dplyr::group_by(heading) %>%
+    summarise(corpus = text %>%
+        str_c(collapse = " ") %>%
+        stringr::str_trunc(500, 'center') %>%
+        stringr::str_wrap(), .groups = 'drop')
+
+cat(df_corpus$corpus, sep = '\n--------\n')
+```
+
+The data is now in a form whereby NLP (Natural Language Processing) methods can by applied by section.
+
+## Conclusion
+
+It is possible to infer PDF section heading by manipulating the metadata available from the PDF encoding.  It is considerably more challenging to traverse the section hierarchy of PDF documents than HTML documents.  The method described herein requires assumptions and interpretations in order to infer what text is a section heading and what the hierarchy is.  In contrast, markup tags make this explicit in HTML documents.  For section-by-section processing of a PDF document, human inspection and interpretation would be required for each document of study i.e. to determine likely section heading heights.

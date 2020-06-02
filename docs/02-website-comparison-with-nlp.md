@@ -57,23 +57,23 @@ scrape <- function(x, i) {
     # Courtesy delay.
     Sys.sleep(5)
     message(glue::glue("Scraping page for: {i}"))
-    
+
     # Parse html.
     html_doc <- xml2::read_html(paste0(BASE_URL, x))
-    
-    # Get rid of nodes that contain maths. 
-    html_doc %>% 
-        rvest::html_nodes(css = "span[class^='mwe-math']") %>% 
+
+    # Get rid of nodes that contain maths.
+    html_doc %>%
+        rvest::html_nodes(css = "span[class^='mwe-math']") %>%
         xml2::xml_remove()
-    
+
     # Extract text from nodes.
-    text <- html_doc %>% 
-        rvest::html_nodes(css = 'p') %>% 
+    text <- html_doc %>%
+        rvest::html_nodes(css = 'p') %>%
         rvest::html_text() %>%
-        stringr::str_c(collapse = " ") %>% 
-        stringr::str_squish() %>% 
+        stringr::str_c(collapse = " ") %>%
+        stringr::str_squish() %>%
         stringr::str_replace_all("([a-z])([A-Z])", "\\1 \\2")
-    
+
     # Return a data frame.
     tibble::tibble(doc_id = i, text = text)
 }
@@ -89,11 +89,11 @@ An example of the text parsed for the first document is shown below.  The reader
 
 
 ```r
-df_html %>% 
-    dplyr::slice(1) %>% 
-    dplyr::pull(text) %>% 
-    stringr::str_trunc(800, 'center', ellipsis = '\n...\n') %>% 
-    stringr::str_wrap() %>% 
+df_html %>%
+    dplyr::slice(1) %>%
+    dplyr::pull(text) %>%
+    stringr::str_trunc(800, 'center', ellipsis = '\n...\n') %>%
+    stringr::str_wrap() %>%
     cat()
 ```
 
@@ -124,15 +124,15 @@ Stop words are not removed since the $\mathrm{TFIDF}$ (term-frequency inverse do
 
 
 ```r
-df_tokens <- df_html %>% 
-    tidytext::unnest_tokens(word, text) %>% 
-    dplyr::filter(stringr::str_detect(word, '^[a-z]+$')) %>% 
+df_tokens <- df_html %>%
+    tidytext::unnest_tokens(word, text) %>%
+    dplyr::filter(stringr::str_detect(word, '^[a-z]+$')) %>%
     dplyr::mutate(word = tm::stemDocument(word)) %>%
     dplyr::mutate(doc_class = case_when(
         doc_id %in% names(subject)[1:5] ~ "Data Science",
         doc_id %in% names(subject)[6:10] ~ "Programming Language",
         TRUE ~ "Dogs"
-    )) %>% 
+    )) %>%
     dplyr::select(doc_class, doc_id, word)
 
 df_tokens %>% head()
@@ -157,14 +157,14 @@ Let $N_{i, j}$ denote the word count for the $i$th word in the $j$th document.  
 $$
 \mathrm{TF}_{i,j} = \frac{N_{i,j}}{\sum_{k=1}^{K} N_{k,j}}
 $$
-where $k$ iterates through every word in the $j$th document.  The *term frequency* is therefore the word frequency in the document normalised with respect to the total word count for the document; in other words, it is the the proportion of the document made comprised of the $i$th word.  
+where $k$ iterates through every word in the $j$th document.  The *term frequency* is therefore the word frequency in the document normalised with respect to the total word count for the document; in other words, it is the the proportion of the document made comprised of the $i$th word.
 
 The *term frequency* might be considered as a measure of the *importance* of a word in a document; however, words that are *generally* important in language, such as stop words, will score highly.  Similarly, if a group of documents with a common theme are to be distinguished from each other, certain words will carry less information that is specific to a document.  For example, the word 'computer' may be common in documents relating to 'programming languages', hence it coveys information about the general theme but not about a specific document within that theme.  The *inverse document frequency*, $\mathrm{IDF}$, is a metric which mitigates this:
 
 $$
-\mathrm{IDF}_{i} = \ln \left[ 
+\mathrm{IDF}_{i} = \ln \left[
     \frac{\sum_{j=1}^{J}j}
-    {\sum_{j=1}^J \min \left(1, \sum_{j=1}^{J}N_{i,j} \right)} 
+    {\sum_{j=1}^J \min \left(1, \sum_{j=1}^{J}N_{i,j} \right)}
 \right]
 $$
 
@@ -174,7 +174,7 @@ The product of $\mathrm{TF}$ and $\mathrm{IDF}$ is a common metric to measure th
 
 
 ```r
-df_tf_idf <- df_tokens %>% 
+df_tf_idf <- df_tokens %>%
     dplyr::group_by(doc_class, doc_id) %>%
     dplyr::count(word, sort = TRUE) %>%
     dplyr::ungroup() %>%
@@ -226,23 +226,25 @@ The word clouds for the $\mathrm{TFIDF}$ of each document are shown in figure \@
 ```r
 # Utility function to plot word cloud.
 plot_word_cloud <- function(df, max_size) {
-    # Prepare data. 
-    df_plt <- df %>% 
-        dplyr::group_by(doc_class, doc_id) %>% 
+    # Prepare data.
+    df_plt <- df %>%
+        dplyr::group_by(doc_class, doc_id) %>%
         dplyr::top_n(30, wt = tf_idf) %>%
-        mutate(angle = 90 * sample(c(0, 1), n(), replace = TRUE, prob = c(60, 40))) 
-    
+        dplyr::mutate(angle = 90 * sample(c(0, 1), n(), replace = TRUE,
+                                          prob = c(60, 40)))
+
     # Create plot
     ggplot(df_plt, aes(label = word, size = tf_idf, angle = angle)) +
-        geom_text_wordcloud(seed = 42, eccentricity = 1, shape = 'square') +
-        scale_size_area(max_size = max_size) +
+        ggwordcloud::geom_text_wordcloud(seed = 42, eccentricity = 1,
+                                         shape = 'square') +
+        ggplot2::scale_size_area(max_size = max_size) +
         ggplot2::coord_equal() +
-        facet_wrap(~doc_class + doc_id, dir = 'v', ncol = 3) + 
-        theme_linedraw()
+        ggplot2::facet_wrap(~doc_class + doc_id, dir = 'v', ncol = 3) +
+        ggplot2::theme_linedraw()
 }
 
 # Plot word cloud.
-plot_word_cloud(df_tf_idf, max_size = 14)    
+plot_word_cloud(df_tf_idf, max_size = 14)
 ```
 
 <div class="figure" style="text-align: center">
@@ -258,13 +260,13 @@ It is also insightful to remove the title words and recalculate the $\mathrm{TFI
 ```r
 # Utility function to remove stemmed title words.
 eliminate_words <- function(title) {
-    stringr::str_split(title, " ")[[1]] %>% 
-        tm::stemDocument() %>% 
+    stringr::str_split(title, " ")[[1]] %>%
+        tm::stemDocument() %>%
         stringr::str_to_lower()
 }
 
-df_tf_idf_no_tw <- df_tokens %>% 
-    dplyr::group_by(doc_id) %>% 
+df_tf_idf_no_tw <- df_tokens %>%
+    dplyr::group_by(doc_id) %>%
     # Eliminate title words.
     dplyr::filter(!(word %in% eliminate_words(doc_id))) %>%
     # Remove acronyms and misspellings.
@@ -291,13 +293,13 @@ plot_word_cloud(df_tf_idf_no_tw, max_size = 10)
 
 From figure \@ref(fig:plt-wordcloud-no-tw) the high scoring words seem consistent with experience in these subjects and this confirms that the $\mathrm{TFIDF}$ metric is a useful indicator of the words that best describe what is distinctive about the contents of a document.
 
-Notice that the word 'dog' is significant for each of the 5 pages relating to dogs.  This is to be expected since the word 'dog' is not a generally significant word for the 15 document corpus but *is* significant for these 5 articles.  Therefore, the $\mathrm{TFIDF}$ is relatively large.  To demonstrate the usefulness of the $\textrm{TFIDF}$ metric, it will be recalculated for *only* the dog articles.  The resulting word cloud is shown in figure \@ref{fig:plt-wordcloud-dogs}.  It is observed that the word 'dog' is eliminated since although the absolute count of the word for each document has not changed, it is now common to all documents, hence the $\mathrf{IDF}$ is 0.
+Notice that the word 'dog' is significant for each of the 5 pages relating to dogs.  This is to be expected since the word 'dog' is not a generally significant word for the 15 document corpus but *is* significant for these 5 articles.  Therefore, the $\mathrm{TFIDF}$ is relatively large.  To demonstrate the usefulness of the $\textrm{TFIDF}$ metric, it will be recalculated for *only* the dog articles.  The resulting word cloud is shown in figure \@ref{fig:plt-wordcloud-dogs}.  It is observed that the word 'dog' is eliminated since although the absolute count of the word for each document has not changed, it is now common to all documents, hence the $\mathrm{IDF}$ is 0.
 
-(ref:plt-wordcloud-no-tw) Word clouds for documents relating to dogs. 
+(ref:plt-wordcloud-dogs) Word clouds for documents relating to dogs.
 
 
 ```r
-df_tf_idf_dogs <- df_tokens %>% 
+df_tf_idf_dogs <- df_tokens %>%
     dplyr::filter(doc_class == 'Dogs') %>%
     dplyr::group_by(doc_class, doc_id) %>%
     dplyr::count(word, sort = TRUE) %>%

@@ -1,4 +1,4 @@
---- 
+---
 title: "Applied NLP for Document Analysis"
 author: "Nick P Taylor"
 date: "`r Sys.Date()`"
@@ -15,4 +15,4 @@ description: "Bookdown report with examples of applied NLP for document analysis
 
 # Preface {-}
 
-This is a collection of reports describing the use of NLP (Natural Language Programming) for the analysis of documents.
+This is a collection of reports describing the use of NLP (Natural Language Programming) for the analysis of documents.  The documents have been compiled using `bookdown` [@R-bookdown ; @bookdown2016] and also use the `tidyverse` packages [@R-tidyverse; @tidyverse2019] extensively.

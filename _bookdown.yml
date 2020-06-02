@@ -5,6 +5,7 @@ output_dir: docs
 rmd_files: ["index.Rmd",
             "01-document-comparison-with-nlp.Rmd",
             "02-website-comparison-with-nlp.Rmd",
+            "03-advanced-pdf-parsing.Rmd",
             "99-references.Rmd"]
 clean: [packages.bib, bookdown.bbl]
 new_session: yes

@@ -24,7 +24,7 @@
 <meta name="author" content="Nick P Taylor" />
 
 
-<meta name="date" content="2020-06-01" />
+<meta name="date" content="2020-06-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +32,7 @@
   
   
 <link rel="prev" href="document-comparison-with-nlp.html"/>
-<link rel="next" href="references.html"/>
+<link rel="next" href="ch-advanced-pdf-parsing.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -152,6 +152,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.4" data-path="website-comparison-with-nlp.html"><a href="website-comparison-with-nlp.html#ssec:tfidf"><i class="fa fa-check"></i><b>2.4</b> Term-frequency Inverse Document-Frequency</a></li>
 <li class="chapter" data-level="2.5" data-path="website-comparison-with-nlp.html"><a href="website-comparison-with-nlp.html#exploratory-analysis-1"><i class="fa fa-check"></i><b>2.5</b> Exploratory Analysis</a></li>
 </ul></li>
+<li class="chapter" data-level="3" data-path="ch-advanced-pdf-parsing.html"><a href="ch-advanced-pdf-parsing.html"><i class="fa fa-check"></i><b>3</b> Advanced PDF Parsing</a><ul>
+<li class="chapter" data-level="3.1" data-path="ch-advanced-pdf-parsing.html"><a href="ch-advanced-pdf-parsing.html#introduction-2"><i class="fa fa-check"></i><b>3.1</b> Introduction</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="ch-advanced-pdf-parsing.html"><a href="ch-advanced-pdf-parsing.html#objective"><i class="fa fa-check"></i><b>3.1.1</b> Objective</a></li>
+<li class="chapter" data-level="3.1.2" data-path="ch-advanced-pdf-parsing.html"><a href="ch-advanced-pdf-parsing.html#html-documents"><i class="fa fa-check"></i><b>3.1.2</b> HTML Documents</a></li>
+<li class="chapter" data-level="3.1.3" data-path="ch-advanced-pdf-parsing.html"><a href="ch-advanced-pdf-parsing.html#pdf-documents"><i class="fa fa-check"></i><b>3.1.3</b> PDF Documents</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="ch-advanced-pdf-parsing.html"><a href="ch-advanced-pdf-parsing.html#method"><i class="fa fa-check"></i><b>3.2</b> Method</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="ch-advanced-pdf-parsing.html"><a href="ch-advanced-pdf-parsing.html#read-document-1"><i class="fa fa-check"></i><b>3.2.1</b> Read Document</a></li>
+<li class="chapter" data-level="3.2.2" data-path="ch-advanced-pdf-parsing.html"><a href="ch-advanced-pdf-parsing.html#identify-headings"><i class="fa fa-check"></i><b>3.2.2</b> Identify Headings</a></li>
+<li class="chapter" data-level="3.2.3" data-path="ch-advanced-pdf-parsing.html"><a href="ch-advanced-pdf-parsing.html#corpus-by-heading"><i class="fa fa-check"></i><b>3.2.3</b> Corpus by Heading</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="ch-advanced-pdf-parsing.html"><a href="ch-advanced-pdf-parsing.html#conclusion"><i class="fa fa-check"></i><b>3.3</b> Conclusion</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -192,67 +205,67 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Friendly, low-speed bots are welcome viewing article pages, but not dynamically-generated pages please.</p>
 </blockquote>
 <p>This confirms that automated requests to Wikipedia are acceptable but should be maintained at a courteous speed. The Wikipedia pages that are to be scraped are as follows:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="website-comparison-with-nlp.html#cb1-1"></a><span class="co"># List of Wikipedia pages.</span></span>
-<span id="cb1-2"><a href="website-comparison-with-nlp.html#cb1-2"></a>BASE_URL &lt;-<span class="st"> &quot;https://en.wikipedia.org/wiki/&quot;</span></span>
-<span id="cb1-3"><a href="website-comparison-with-nlp.html#cb1-3"></a>subject &lt;-<span class="st"> </span><span class="kw">list</span>(</span>
-<span id="cb1-4"><a href="website-comparison-with-nlp.html#cb1-4"></a>    <span class="co"># Data Science ----------------------------------------------------</span></span>
-<span id="cb1-5"><a href="website-comparison-with-nlp.html#cb1-5"></a>    <span class="st">`</span><span class="dt">Natural Language Processing</span><span class="st">`</span>  =<span class="st"> &quot;Natural_Language_Processing&quot;</span>,</span>
-<span id="cb1-6"><a href="website-comparison-with-nlp.html#cb1-6"></a>    <span class="st">`</span><span class="dt">Data Science</span><span class="st">`</span>                 =<span class="st"> &quot;Data_science&quot;</span>,</span>
-<span id="cb1-7"><a href="website-comparison-with-nlp.html#cb1-7"></a>    <span class="st">`</span><span class="dt">Computer Vision</span><span class="st">`</span>              =<span class="st">  &quot;Computer_vision&quot;</span>,</span>
-<span id="cb1-8"><a href="website-comparison-with-nlp.html#cb1-8"></a>    <span class="st">`</span><span class="dt">Artificial Intelligence</span><span class="st">`</span>      =<span class="st"> &quot;Artificial_intelligence&quot;</span>,</span>
-<span id="cb1-9"><a href="website-comparison-with-nlp.html#cb1-9"></a>    <span class="st">`</span><span class="dt">Machine Learning</span><span class="st">`</span>             =<span class="st"> &quot;Machine_learning&quot;</span>,</span>
-<span id="cb1-10"><a href="website-comparison-with-nlp.html#cb1-10"></a>    <span class="co"># Programming Languages -------------------------------------------</span></span>
-<span id="cb1-11"><a href="website-comparison-with-nlp.html#cb1-11"></a>    <span class="st">`</span><span class="dt">R</span><span class="st">`</span>                            =<span class="st"> &quot;R_(programming_language)&quot;</span>,</span>
-<span id="cb1-12"><a href="website-comparison-with-nlp.html#cb1-12"></a>    <span class="st">`</span><span class="dt">Python</span><span class="st">`</span>                       =<span class="st"> &quot;Python_(programming_language)&quot;</span>,</span>
-<span id="cb1-13"><a href="website-comparison-with-nlp.html#cb1-13"></a>    <span class="st">`</span><span class="dt">C++</span><span class="st">`</span>                          =<span class="st"> &quot;C%2B%2B&quot;</span>,</span>
-<span id="cb1-14"><a href="website-comparison-with-nlp.html#cb1-14"></a>    <span class="st">`</span><span class="dt">Fortran</span><span class="st">`</span>                      =<span class="st"> &quot;Fortran&quot;</span>,</span>
-<span id="cb1-15"><a href="website-comparison-with-nlp.html#cb1-15"></a>    <span class="st">`</span><span class="dt">Java</span><span class="st">`</span>                         =<span class="st"> &quot;Java_(programming_language)&quot;</span>,</span>
-<span id="cb1-16"><a href="website-comparison-with-nlp.html#cb1-16"></a>    <span class="co"># Dogs ------------------------------------------------------------</span></span>
-<span id="cb1-17"><a href="website-comparison-with-nlp.html#cb1-17"></a>    <span class="st">`</span><span class="dt">German Shepherd</span><span class="st">`</span>              =<span class="st"> &quot;German_Shepherd&quot;</span>,</span>
-<span id="cb1-18"><a href="website-comparison-with-nlp.html#cb1-18"></a>    <span class="st">`</span><span class="dt">Spaniel</span><span class="st">`</span>                      =<span class="st"> &quot;Spaniel&quot;</span>,</span>
-<span id="cb1-19"><a href="website-comparison-with-nlp.html#cb1-19"></a>    <span class="st">`</span><span class="dt">Jack Russell Terrier</span><span class="st">`</span>         =<span class="st"> &quot;Jack_Russell_Terrier&quot;</span>,</span>
-<span id="cb1-20"><a href="website-comparison-with-nlp.html#cb1-20"></a>    <span class="st">`</span><span class="dt">Staffordshire Bull Terrier</span><span class="st">`</span>   =<span class="st"> &quot;Staffordshire_Bull_Terrier&quot;</span>,</span>
-<span id="cb1-21"><a href="website-comparison-with-nlp.html#cb1-21"></a>    <span class="st">`</span><span class="dt">Dobermann</span><span class="st">`</span>                    =<span class="st"> &quot;Doberman_Pinscher&quot;</span></span>
-<span id="cb1-22"><a href="website-comparison-with-nlp.html#cb1-22"></a>)</span></code></pre></div>
-<p>Web pages are parsed using the <code>xml2</code> package <span class="citation">(Wickham, Hester, and Ooms <a href="#ref-R-xml2" role="doc-biblioref">2020</a>)</span> and then the <code>rvest</code> <span class="citation">(Wickham <a href="#ref-R-rvest" role="doc-biblioref">2019</a>)</span> package is used to extract the text content enclosed in <code>&lt;p&gt;</code> tags. Furthermore, child tags of the <code>&lt;p&gt;</code> tags with a class attribute that corresponds to maths content are removed since these do not contain ‘natural language’.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="website-comparison-with-nlp.html#cb2-1"></a><span class="co"># Utility function to scrape paragraph content from web pages.</span></span>
-<span id="cb2-2"><a href="website-comparison-with-nlp.html#cb2-2"></a>scrape &lt;-<span class="st"> </span><span class="cf">function</span>(x, i) {</span>
-<span id="cb2-3"><a href="website-comparison-with-nlp.html#cb2-3"></a>    <span class="co"># Courtesy delay.</span></span>
-<span id="cb2-4"><a href="website-comparison-with-nlp.html#cb2-4"></a>    <span class="kw">Sys.sleep</span>(<span class="dv">5</span>)</span>
-<span id="cb2-5"><a href="website-comparison-with-nlp.html#cb2-5"></a>    <span class="kw">message</span>(glue<span class="op">::</span><span class="kw">glue</span>(<span class="st">&quot;Scraping page for: {i}&quot;</span>))</span>
-<span id="cb2-6"><a href="website-comparison-with-nlp.html#cb2-6"></a>    </span>
-<span id="cb2-7"><a href="website-comparison-with-nlp.html#cb2-7"></a>    <span class="co"># Parse html.</span></span>
-<span id="cb2-8"><a href="website-comparison-with-nlp.html#cb2-8"></a>    html_doc &lt;-<span class="st"> </span>xml2<span class="op">::</span><span class="kw">read_html</span>(<span class="kw">paste0</span>(BASE_URL, x))</span>
-<span id="cb2-9"><a href="website-comparison-with-nlp.html#cb2-9"></a>    </span>
-<span id="cb2-10"><a href="website-comparison-with-nlp.html#cb2-10"></a>    <span class="co"># Get rid of nodes that contain maths. </span></span>
-<span id="cb2-11"><a href="website-comparison-with-nlp.html#cb2-11"></a>    html_doc <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-12"><a href="website-comparison-with-nlp.html#cb2-12"></a><span class="st">        </span>rvest<span class="op">::</span><span class="kw">html_nodes</span>(<span class="dt">css =</span> <span class="st">&quot;span[class^=&#39;mwe-math&#39;]&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-13"><a href="website-comparison-with-nlp.html#cb2-13"></a><span class="st">        </span>xml2<span class="op">::</span><span class="kw">xml_remove</span>()</span>
-<span id="cb2-14"><a href="website-comparison-with-nlp.html#cb2-14"></a>    </span>
-<span id="cb2-15"><a href="website-comparison-with-nlp.html#cb2-15"></a>    <span class="co"># Extract text from nodes.</span></span>
-<span id="cb2-16"><a href="website-comparison-with-nlp.html#cb2-16"></a>    text &lt;-<span class="st"> </span>html_doc <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-17"><a href="website-comparison-with-nlp.html#cb2-17"></a><span class="st">        </span>rvest<span class="op">::</span><span class="kw">html_nodes</span>(<span class="dt">css =</span> <span class="st">&#39;p&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-18"><a href="website-comparison-with-nlp.html#cb2-18"></a><span class="st">        </span>rvest<span class="op">::</span><span class="kw">html_text</span>() <span class="op">%&gt;%</span></span>
-<span id="cb2-19"><a href="website-comparison-with-nlp.html#cb2-19"></a><span class="st">        </span>stringr<span class="op">::</span><span class="kw">str_c</span>(<span class="dt">collapse =</span> <span class="st">&quot; &quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-20"><a href="website-comparison-with-nlp.html#cb2-20"></a><span class="st">        </span>stringr<span class="op">::</span><span class="kw">str_squish</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-21"><a href="website-comparison-with-nlp.html#cb2-21"></a><span class="st">        </span>stringr<span class="op">::</span><span class="kw">str_replace_all</span>(<span class="st">&quot;([a-z])([A-Z])&quot;</span>, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">1 </span><span class="ch">\\</span><span class="st">2&quot;</span>)</span>
-<span id="cb2-22"><a href="website-comparison-with-nlp.html#cb2-22"></a>    </span>
-<span id="cb2-23"><a href="website-comparison-with-nlp.html#cb2-23"></a>    <span class="co"># Return a data frame.</span></span>
-<span id="cb2-24"><a href="website-comparison-with-nlp.html#cb2-24"></a>    tibble<span class="op">::</span><span class="kw">tibble</span>(<span class="dt">doc_id =</span> i, <span class="dt">text =</span> text)</span>
-<span id="cb2-25"><a href="website-comparison-with-nlp.html#cb2-25"></a>}</span>
-<span id="cb2-26"><a href="website-comparison-with-nlp.html#cb2-26"></a></span>
-<span id="cb2-27"><a href="website-comparison-with-nlp.html#cb2-27"></a><span class="co"># Iterate through each web page.</span></span>
-<span id="cb2-28"><a href="website-comparison-with-nlp.html#cb2-28"></a>df_html &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">imap_dfr</span>(subject, scrape)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="website-comparison-with-nlp.html#cb12-1"></a><span class="co"># List of Wikipedia pages.</span></span>
+<span id="cb12-2"><a href="website-comparison-with-nlp.html#cb12-2"></a>BASE_URL &lt;-<span class="st"> &quot;https://en.wikipedia.org/wiki/&quot;</span></span>
+<span id="cb12-3"><a href="website-comparison-with-nlp.html#cb12-3"></a>subject &lt;-<span class="st"> </span><span class="kw">list</span>(</span>
+<span id="cb12-4"><a href="website-comparison-with-nlp.html#cb12-4"></a>    <span class="co"># Data Science ----------------------------------------------------</span></span>
+<span id="cb12-5"><a href="website-comparison-with-nlp.html#cb12-5"></a>    <span class="st">`</span><span class="dt">Natural Language Processing</span><span class="st">`</span>  =<span class="st"> &quot;Natural_Language_Processing&quot;</span>,</span>
+<span id="cb12-6"><a href="website-comparison-with-nlp.html#cb12-6"></a>    <span class="st">`</span><span class="dt">Data Science</span><span class="st">`</span>                 =<span class="st"> &quot;Data_science&quot;</span>,</span>
+<span id="cb12-7"><a href="website-comparison-with-nlp.html#cb12-7"></a>    <span class="st">`</span><span class="dt">Computer Vision</span><span class="st">`</span>              =<span class="st">  &quot;Computer_vision&quot;</span>,</span>
+<span id="cb12-8"><a href="website-comparison-with-nlp.html#cb12-8"></a>    <span class="st">`</span><span class="dt">Artificial Intelligence</span><span class="st">`</span>      =<span class="st"> &quot;Artificial_intelligence&quot;</span>,</span>
+<span id="cb12-9"><a href="website-comparison-with-nlp.html#cb12-9"></a>    <span class="st">`</span><span class="dt">Machine Learning</span><span class="st">`</span>             =<span class="st"> &quot;Machine_learning&quot;</span>,</span>
+<span id="cb12-10"><a href="website-comparison-with-nlp.html#cb12-10"></a>    <span class="co"># Programming Languages -------------------------------------------</span></span>
+<span id="cb12-11"><a href="website-comparison-with-nlp.html#cb12-11"></a>    <span class="st">`</span><span class="dt">R</span><span class="st">`</span>                            =<span class="st"> &quot;R_(programming_language)&quot;</span>,</span>
+<span id="cb12-12"><a href="website-comparison-with-nlp.html#cb12-12"></a>    <span class="st">`</span><span class="dt">Python</span><span class="st">`</span>                       =<span class="st"> &quot;Python_(programming_language)&quot;</span>,</span>
+<span id="cb12-13"><a href="website-comparison-with-nlp.html#cb12-13"></a>    <span class="st">`</span><span class="dt">C++</span><span class="st">`</span>                          =<span class="st"> &quot;C%2B%2B&quot;</span>,</span>
+<span id="cb12-14"><a href="website-comparison-with-nlp.html#cb12-14"></a>    <span class="st">`</span><span class="dt">Fortran</span><span class="st">`</span>                      =<span class="st"> &quot;Fortran&quot;</span>,</span>
+<span id="cb12-15"><a href="website-comparison-with-nlp.html#cb12-15"></a>    <span class="st">`</span><span class="dt">Java</span><span class="st">`</span>                         =<span class="st"> &quot;Java_(programming_language)&quot;</span>,</span>
+<span id="cb12-16"><a href="website-comparison-with-nlp.html#cb12-16"></a>    <span class="co"># Dogs ------------------------------------------------------------</span></span>
+<span id="cb12-17"><a href="website-comparison-with-nlp.html#cb12-17"></a>    <span class="st">`</span><span class="dt">German Shepherd</span><span class="st">`</span>              =<span class="st"> &quot;German_Shepherd&quot;</span>,</span>
+<span id="cb12-18"><a href="website-comparison-with-nlp.html#cb12-18"></a>    <span class="st">`</span><span class="dt">Spaniel</span><span class="st">`</span>                      =<span class="st"> &quot;Spaniel&quot;</span>,</span>
+<span id="cb12-19"><a href="website-comparison-with-nlp.html#cb12-19"></a>    <span class="st">`</span><span class="dt">Jack Russell Terrier</span><span class="st">`</span>         =<span class="st"> &quot;Jack_Russell_Terrier&quot;</span>,</span>
+<span id="cb12-20"><a href="website-comparison-with-nlp.html#cb12-20"></a>    <span class="st">`</span><span class="dt">Staffordshire Bull Terrier</span><span class="st">`</span>   =<span class="st"> &quot;Staffordshire_Bull_Terrier&quot;</span>,</span>
+<span id="cb12-21"><a href="website-comparison-with-nlp.html#cb12-21"></a>    <span class="st">`</span><span class="dt">Dobermann</span><span class="st">`</span>                    =<span class="st"> &quot;Doberman_Pinscher&quot;</span></span>
+<span id="cb12-22"><a href="website-comparison-with-nlp.html#cb12-22"></a>)</span></code></pre></div>
+<p>Web pages are parsed using the <code>xml2</code> package <span class="citation">(Wickham, Hester, and Ooms <a href="#ref-R-xml2" role="doc-biblioref">2020</a>)</span> and then the <code>rvest</code> <span class="citation">(Wickham <a href="#ref-R-rvest" role="doc-biblioref">2019</a><a href="#ref-R-rvest" role="doc-biblioref">a</a>)</span> package is used to extract the text content enclosed in <code>&lt;p&gt;</code> tags. Furthermore, child tags of the <code>&lt;p&gt;</code> tags with a class attribute that corresponds to maths content are removed since these do not contain ‘natural language’.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="website-comparison-with-nlp.html#cb13-1"></a><span class="co"># Utility function to scrape paragraph content from web pages.</span></span>
+<span id="cb13-2"><a href="website-comparison-with-nlp.html#cb13-2"></a>scrape &lt;-<span class="st"> </span><span class="cf">function</span>(x, i) {</span>
+<span id="cb13-3"><a href="website-comparison-with-nlp.html#cb13-3"></a>    <span class="co"># Courtesy delay.</span></span>
+<span id="cb13-4"><a href="website-comparison-with-nlp.html#cb13-4"></a>    <span class="kw">Sys.sleep</span>(<span class="dv">5</span>)</span>
+<span id="cb13-5"><a href="website-comparison-with-nlp.html#cb13-5"></a>    <span class="kw">message</span>(glue<span class="op">::</span><span class="kw">glue</span>(<span class="st">&quot;Scraping page for: {i}&quot;</span>))</span>
+<span id="cb13-6"><a href="website-comparison-with-nlp.html#cb13-6"></a></span>
+<span id="cb13-7"><a href="website-comparison-with-nlp.html#cb13-7"></a>    <span class="co"># Parse html.</span></span>
+<span id="cb13-8"><a href="website-comparison-with-nlp.html#cb13-8"></a>    html_doc &lt;-<span class="st"> </span>xml2<span class="op">::</span><span class="kw">read_html</span>(<span class="kw">paste0</span>(BASE_URL, x))</span>
+<span id="cb13-9"><a href="website-comparison-with-nlp.html#cb13-9"></a></span>
+<span id="cb13-10"><a href="website-comparison-with-nlp.html#cb13-10"></a>    <span class="co"># Get rid of nodes that contain maths.</span></span>
+<span id="cb13-11"><a href="website-comparison-with-nlp.html#cb13-11"></a>    html_doc <span class="op">%&gt;%</span></span>
+<span id="cb13-12"><a href="website-comparison-with-nlp.html#cb13-12"></a><span class="st">        </span>rvest<span class="op">::</span><span class="kw">html_nodes</span>(<span class="dt">css =</span> <span class="st">&quot;span[class^=&#39;mwe-math&#39;]&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb13-13"><a href="website-comparison-with-nlp.html#cb13-13"></a><span class="st">        </span>xml2<span class="op">::</span><span class="kw">xml_remove</span>()</span>
+<span id="cb13-14"><a href="website-comparison-with-nlp.html#cb13-14"></a></span>
+<span id="cb13-15"><a href="website-comparison-with-nlp.html#cb13-15"></a>    <span class="co"># Extract text from nodes.</span></span>
+<span id="cb13-16"><a href="website-comparison-with-nlp.html#cb13-16"></a>    text &lt;-<span class="st"> </span>html_doc <span class="op">%&gt;%</span></span>
+<span id="cb13-17"><a href="website-comparison-with-nlp.html#cb13-17"></a><span class="st">        </span>rvest<span class="op">::</span><span class="kw">html_nodes</span>(<span class="dt">css =</span> <span class="st">&#39;p&#39;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb13-18"><a href="website-comparison-with-nlp.html#cb13-18"></a><span class="st">        </span>rvest<span class="op">::</span><span class="kw">html_text</span>() <span class="op">%&gt;%</span></span>
+<span id="cb13-19"><a href="website-comparison-with-nlp.html#cb13-19"></a><span class="st">        </span>stringr<span class="op">::</span><span class="kw">str_c</span>(<span class="dt">collapse =</span> <span class="st">&quot; &quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb13-20"><a href="website-comparison-with-nlp.html#cb13-20"></a><span class="st">        </span>stringr<span class="op">::</span><span class="kw">str_squish</span>() <span class="op">%&gt;%</span></span>
+<span id="cb13-21"><a href="website-comparison-with-nlp.html#cb13-21"></a><span class="st">        </span>stringr<span class="op">::</span><span class="kw">str_replace_all</span>(<span class="st">&quot;([a-z])([A-Z])&quot;</span>, <span class="st">&quot;</span><span class="ch">\\</span><span class="st">1 </span><span class="ch">\\</span><span class="st">2&quot;</span>)</span>
+<span id="cb13-22"><a href="website-comparison-with-nlp.html#cb13-22"></a></span>
+<span id="cb13-23"><a href="website-comparison-with-nlp.html#cb13-23"></a>    <span class="co"># Return a data frame.</span></span>
+<span id="cb13-24"><a href="website-comparison-with-nlp.html#cb13-24"></a>    tibble<span class="op">::</span><span class="kw">tibble</span>(<span class="dt">doc_id =</span> i, <span class="dt">text =</span> text)</span>
+<span id="cb13-25"><a href="website-comparison-with-nlp.html#cb13-25"></a>}</span>
+<span id="cb13-26"><a href="website-comparison-with-nlp.html#cb13-26"></a></span>
+<span id="cb13-27"><a href="website-comparison-with-nlp.html#cb13-27"></a><span class="co"># Iterate through each web page.</span></span>
+<span id="cb13-28"><a href="website-comparison-with-nlp.html#cb13-28"></a>df_html &lt;-<span class="st"> </span>purrr<span class="op">::</span><span class="kw">imap_dfr</span>(subject, scrape)</span></code></pre></div>
 <p>An example of the text parsed for the first document is shown below. The reader may refer to the following web page to verify that the parsed text corresponds to the main web page text:</p>
 <blockquote>
 <p><a href="https://en.wikipedia.org/wiki/Natural_Language_Processing" class="uri">https://en.wikipedia.org/wiki/Natural_Language_Processing</a></p>
 </blockquote>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="website-comparison-with-nlp.html#cb3-1"></a>df_html <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb3-2"><a href="website-comparison-with-nlp.html#cb3-2"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">slice</span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb3-3"><a href="website-comparison-with-nlp.html#cb3-3"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">pull</span>(text) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb3-4"><a href="website-comparison-with-nlp.html#cb3-4"></a><span class="st">    </span>stringr<span class="op">::</span><span class="kw">str_trunc</span>(<span class="dv">800</span>, <span class="st">&#39;center&#39;</span>, <span class="dt">ellipsis =</span> <span class="st">&#39;</span><span class="ch">\n</span><span class="st">...</span><span class="ch">\n</span><span class="st">&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb3-5"><a href="website-comparison-with-nlp.html#cb3-5"></a><span class="st">    </span>stringr<span class="op">::</span><span class="kw">str_wrap</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb3-6"><a href="website-comparison-with-nlp.html#cb3-6"></a><span class="st">    </span><span class="kw">cat</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="website-comparison-with-nlp.html#cb14-1"></a>df_html <span class="op">%&gt;%</span></span>
+<span id="cb14-2"><a href="website-comparison-with-nlp.html#cb14-2"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">slice</span>(<span class="dv">1</span>) <span class="op">%&gt;%</span></span>
+<span id="cb14-3"><a href="website-comparison-with-nlp.html#cb14-3"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">pull</span>(text) <span class="op">%&gt;%</span></span>
+<span id="cb14-4"><a href="website-comparison-with-nlp.html#cb14-4"></a><span class="st">    </span>stringr<span class="op">::</span><span class="kw">str_trunc</span>(<span class="dv">800</span>, <span class="st">&#39;center&#39;</span>, <span class="dt">ellipsis =</span> <span class="st">&#39;</span><span class="ch">\n</span><span class="st">...</span><span class="ch">\n</span><span class="st">&#39;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb14-5"><a href="website-comparison-with-nlp.html#cb14-5"></a><span class="st">    </span>stringr<span class="op">::</span><span class="kw">str_wrap</span>() <span class="op">%&gt;%</span></span>
+<span id="cb14-6"><a href="website-comparison-with-nlp.html#cb14-6"></a><span class="st">    </span><span class="kw">cat</span>()</span></code></pre></div>
 <pre><code>Natural language processing (NLP) is a subfield of linguistics, computer
 science, information engineering, and artificial intelligence concerned with the
 interactions between computers and human (natural) languages, in particular how
@@ -275,18 +288,18 @@ Function specific to a language</code></pre>
 <li>The documents are categorised as <em>data science</em>, <em>programming language</em> or <em>dogs</em>; this is is to assist with later visualisation and analysis.</li>
 </ul>
 <p>Stop words are not removed since the <span class="math inline">\(\mathrm{TFIDF}\)</span> (term-frequency inverse document-frequency) will be used to quantify the importance of a word (see <a href="website-comparison-with-nlp.html#ssec:tfidf">2.4</a>); this will act to suppress or eliminate stop words. The tokenised corpus is represented by a data frame and the first rows are shown for inspection below.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="website-comparison-with-nlp.html#cb5-1"></a>df_tokens &lt;-<span class="st"> </span>df_html <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb5-2"><a href="website-comparison-with-nlp.html#cb5-2"></a><span class="st">    </span>tidytext<span class="op">::</span><span class="kw">unnest_tokens</span>(word, text) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb5-3"><a href="website-comparison-with-nlp.html#cb5-3"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(stringr<span class="op">::</span><span class="kw">str_detect</span>(word, <span class="st">&#39;^[a-z]+$&#39;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb5-4"><a href="website-comparison-with-nlp.html#cb5-4"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">word =</span> tm<span class="op">::</span><span class="kw">stemDocument</span>(word)) <span class="op">%&gt;%</span></span>
-<span id="cb5-5"><a href="website-comparison-with-nlp.html#cb5-5"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">doc_class =</span> <span class="kw">case_when</span>(</span>
-<span id="cb5-6"><a href="website-comparison-with-nlp.html#cb5-6"></a>        doc_id <span class="op">%in%</span><span class="st"> </span><span class="kw">names</span>(subject)[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>] <span class="op">~</span><span class="st"> &quot;Data Science&quot;</span>,</span>
-<span id="cb5-7"><a href="website-comparison-with-nlp.html#cb5-7"></a>        doc_id <span class="op">%in%</span><span class="st"> </span><span class="kw">names</span>(subject)[<span class="dv">6</span><span class="op">:</span><span class="dv">10</span>] <span class="op">~</span><span class="st"> &quot;Programming Language&quot;</span>,</span>
-<span id="cb5-8"><a href="website-comparison-with-nlp.html#cb5-8"></a>        <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;Dogs&quot;</span></span>
-<span id="cb5-9"><a href="website-comparison-with-nlp.html#cb5-9"></a>    )) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb5-10"><a href="website-comparison-with-nlp.html#cb5-10"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">select</span>(doc_class, doc_id, word)</span>
-<span id="cb5-11"><a href="website-comparison-with-nlp.html#cb5-11"></a></span>
-<span id="cb5-12"><a href="website-comparison-with-nlp.html#cb5-12"></a>df_tokens <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="website-comparison-with-nlp.html#cb16-1"></a>df_tokens &lt;-<span class="st"> </span>df_html <span class="op">%&gt;%</span></span>
+<span id="cb16-2"><a href="website-comparison-with-nlp.html#cb16-2"></a><span class="st">    </span>tidytext<span class="op">::</span><span class="kw">unnest_tokens</span>(word, text) <span class="op">%&gt;%</span></span>
+<span id="cb16-3"><a href="website-comparison-with-nlp.html#cb16-3"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(stringr<span class="op">::</span><span class="kw">str_detect</span>(word, <span class="st">&#39;^[a-z]+$&#39;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb16-4"><a href="website-comparison-with-nlp.html#cb16-4"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">word =</span> tm<span class="op">::</span><span class="kw">stemDocument</span>(word)) <span class="op">%&gt;%</span></span>
+<span id="cb16-5"><a href="website-comparison-with-nlp.html#cb16-5"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">doc_class =</span> <span class="kw">case_when</span>(</span>
+<span id="cb16-6"><a href="website-comparison-with-nlp.html#cb16-6"></a>        doc_id <span class="op">%in%</span><span class="st"> </span><span class="kw">names</span>(subject)[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>] <span class="op">~</span><span class="st"> &quot;Data Science&quot;</span>,</span>
+<span id="cb16-7"><a href="website-comparison-with-nlp.html#cb16-7"></a>        doc_id <span class="op">%in%</span><span class="st"> </span><span class="kw">names</span>(subject)[<span class="dv">6</span><span class="op">:</span><span class="dv">10</span>] <span class="op">~</span><span class="st"> &quot;Programming Language&quot;</span>,</span>
+<span id="cb16-8"><a href="website-comparison-with-nlp.html#cb16-8"></a>        <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;Dogs&quot;</span></span>
+<span id="cb16-9"><a href="website-comparison-with-nlp.html#cb16-9"></a>    )) <span class="op">%&gt;%</span></span>
+<span id="cb16-10"><a href="website-comparison-with-nlp.html#cb16-10"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">select</span>(doc_class, doc_id, word)</span>
+<span id="cb16-11"><a href="website-comparison-with-nlp.html#cb16-11"></a></span>
+<span id="cb16-12"><a href="website-comparison-with-nlp.html#cb16-12"></a>df_tokens <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>()</span></code></pre></div>
 <pre><code>## # A tibble: 6 x 3
 ##   doc_class    doc_id                      word   
 ##   &lt;chr&gt;        &lt;chr&gt;                       &lt;chr&gt;  
@@ -306,18 +319,18 @@ Function specific to a language</code></pre>
 where <span class="math inline">\(k\)</span> iterates through every word in the <span class="math inline">\(j\)</span>th document. The <em>term frequency</em> is therefore the word frequency in the document normalised with respect to the total word count for the document; in other words, it is the the proportion of the document made comprised of the <span class="math inline">\(i\)</span>th word.</p>
 <p>The <em>term frequency</em> might be considered as a measure of the <em>importance</em> of a word in a document; however, words that are <em>generally</em> important in language, such as stop words, will score highly. Similarly, if a group of documents with a common theme are to be distinguished from each other, certain words will carry less information that is specific to a document. For example, the word ‘computer’ may be common in documents relating to ‘programming languages’, hence it coveys information about the general theme but not about a specific document within that theme. The <em>inverse document frequency</em>, <span class="math inline">\(\mathrm{IDF}\)</span>, is a metric which mitigates this:</p>
 <p><span class="math display">\[
-\mathrm{IDF}_{i} = \ln \left[ 
+\mathrm{IDF}_{i} = \ln \left[
     \frac{\sum_{j=1}^{J}j}
-    {\sum_{j=1}^J \min \left(1, \sum_{j=1}^{J}N_{i,j} \right)} 
+    {\sum_{j=1}^J \min \left(1, \sum_{j=1}^{J}N_{i,j} \right)}
 \right]
 \]</span></p>
 <p>The <span class="math inline">\(\mathrm{IDF}\)</span> is the natural logarithm of ratio of the total number of documents to the number of documents containing word <span class="math inline">\(i\)</span>. Therefore, if word <span class="math inline">\(i\)</span> occurs in all documents, the <span class="math inline">\(\mathrm{IDF}\)</span> is 0 and the <span class="math inline">\(\mathrm{IDF}\)</span> increases as the word rarity word increases. Note that the logarithmic relationship is derived from empirical studies of word importance ranking relative to natural language.</p>
 <p>The product of <span class="math inline">\(\mathrm{TF}\)</span> and <span class="math inline">\(\mathrm{IDF}\)</span> is a common metric to measure the importance of a word. The <span class="math inline">\(\mathrm{IDF}\)</span> acts to diminish the <span class="math inline">\(\mathrm{TF}\)</span> metric for words which are generally common in the corpus. Hence, the <em>term-frequency inverse document-frequency</em> is often a useful metric for ranking <em>distinctive</em> words in a document. The <span class="math inline">\(\mathrm{TFIDF}\)</span> metric is calculated using <code>tidytext::bind_tf_idf</code> <span class="citation">(Robinson and Silge <a href="#ref-R-tidytext" role="doc-biblioref">2020</a>)</span>.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="website-comparison-with-nlp.html#cb7-1"></a>df_tf_idf &lt;-<span class="st"> </span>df_tokens <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb7-2"><a href="website-comparison-with-nlp.html#cb7-2"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(doc_class, doc_id) <span class="op">%&gt;%</span></span>
-<span id="cb7-3"><a href="website-comparison-with-nlp.html#cb7-3"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">count</span>(word, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
-<span id="cb7-4"><a href="website-comparison-with-nlp.html#cb7-4"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></span>
-<span id="cb7-5"><a href="website-comparison-with-nlp.html#cb7-5"></a><span class="st">    </span>tidytext<span class="op">::</span><span class="kw">bind_tf_idf</span>(word, doc_id, n)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="website-comparison-with-nlp.html#cb18-1"></a>df_tf_idf &lt;-<span class="st"> </span>df_tokens <span class="op">%&gt;%</span></span>
+<span id="cb18-2"><a href="website-comparison-with-nlp.html#cb18-2"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(doc_class, doc_id) <span class="op">%&gt;%</span></span>
+<span id="cb18-3"><a href="website-comparison-with-nlp.html#cb18-3"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">count</span>(word, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
+<span id="cb18-4"><a href="website-comparison-with-nlp.html#cb18-4"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></span>
+<span id="cb18-5"><a href="website-comparison-with-nlp.html#cb18-5"></a><span class="st">    </span>tidytext<span class="op">::</span><span class="kw">bind_tf_idf</span>(word, doc_id, n)</span></code></pre></div>
 <p>Below, the metrics for the words with the lowest and highest <span class="math inline">\(\mathrm{TFIDF}\)</span> are shown. The word count ‘the’ is very common in each document i.e. <span class="math inline">\(n\)</span> is large. However, the <span class="math inline">\(\mathrm{IDF}\)</span> is 0 since it occurs in all documents, thus <span class="math inline">\(\mathrm{TFIDF}\)</span> is also 0. On the contrary, the word ‘dobermann’ has relatively few counts in the document on Dobermann but since it does not occur in other documents, it has a high <span class="math inline">\(\mathrm{IDF}\)</span> i.e. <span class="math inline">\(\mathrm{IDF} = ln(15/1) = 2.71\)</span>.</p>
 <pre><code>## Lowest TFIDF...</code></pre>
 <pre><code>## # A tibble: 6 x 7
@@ -344,25 +357,27 @@ where <span class="math inline">\(k\)</span> iterates through every word in the 
 <h2><span class="header-section-number">2.5</span> Exploratory Analysis</h2>
 <p>The word clouds for the <span class="math inline">\(\mathrm{TFIDF}\)</span> of each document are shown in figure <a href="website-comparison-with-nlp.html#fig:plt-wordcloud-with-tw">2.1</a>. The word cloud data source is a corpus which does <em>not</em> explicitly convey the title of the document. Notice how the highest scoring words based on <span class="math inline">\(\mathrm{TFIDF}\)</span> enable a good estimate of the likely title words.</p>
 
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="website-comparison-with-nlp.html#cb12-1"></a><span class="co"># Utility function to plot word cloud.</span></span>
-<span id="cb12-2"><a href="website-comparison-with-nlp.html#cb12-2"></a>plot_word_cloud &lt;-<span class="st"> </span><span class="cf">function</span>(df, max_size) {</span>
-<span id="cb12-3"><a href="website-comparison-with-nlp.html#cb12-3"></a>    <span class="co"># Prepare data. </span></span>
-<span id="cb12-4"><a href="website-comparison-with-nlp.html#cb12-4"></a>    df_plt &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb12-5"><a href="website-comparison-with-nlp.html#cb12-5"></a><span class="st">        </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(doc_class, doc_id) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb12-6"><a href="website-comparison-with-nlp.html#cb12-6"></a><span class="st">        </span>dplyr<span class="op">::</span><span class="kw">top_n</span>(<span class="dv">30</span>, <span class="dt">wt =</span> tf_idf) <span class="op">%&gt;%</span></span>
-<span id="cb12-7"><a href="website-comparison-with-nlp.html#cb12-7"></a><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">angle =</span> <span class="dv">90</span> <span class="op">*</span><span class="st"> </span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="kw">n</span>(), <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="kw">c</span>(<span class="dv">60</span>, <span class="dv">40</span>))) </span>
-<span id="cb12-8"><a href="website-comparison-with-nlp.html#cb12-8"></a>    </span>
-<span id="cb12-9"><a href="website-comparison-with-nlp.html#cb12-9"></a>    <span class="co"># Create plot</span></span>
-<span id="cb12-10"><a href="website-comparison-with-nlp.html#cb12-10"></a>    <span class="kw">ggplot</span>(df_plt, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> tf_idf, <span class="dt">angle =</span> angle)) <span class="op">+</span></span>
-<span id="cb12-11"><a href="website-comparison-with-nlp.html#cb12-11"></a><span class="st">        </span><span class="kw">geom_text_wordcloud</span>(<span class="dt">seed =</span> <span class="dv">42</span>, <span class="dt">eccentricity =</span> <span class="dv">1</span>, <span class="dt">shape =</span> <span class="st">&#39;square&#39;</span>) <span class="op">+</span></span>
-<span id="cb12-12"><a href="website-comparison-with-nlp.html#cb12-12"></a><span class="st">        </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> max_size) <span class="op">+</span></span>
-<span id="cb12-13"><a href="website-comparison-with-nlp.html#cb12-13"></a><span class="st">        </span>ggplot2<span class="op">::</span><span class="kw">coord_equal</span>() <span class="op">+</span></span>
-<span id="cb12-14"><a href="website-comparison-with-nlp.html#cb12-14"></a><span class="st">        </span><span class="kw">facet_wrap</span>(<span class="op">~</span>doc_class <span class="op">+</span><span class="st"> </span>doc_id, <span class="dt">dir =</span> <span class="st">&#39;v&#39;</span>, <span class="dt">ncol =</span> <span class="dv">3</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb12-15"><a href="website-comparison-with-nlp.html#cb12-15"></a><span class="st">        </span><span class="kw">theme_linedraw</span>()</span>
-<span id="cb12-16"><a href="website-comparison-with-nlp.html#cb12-16"></a>}</span>
-<span id="cb12-17"><a href="website-comparison-with-nlp.html#cb12-17"></a></span>
-<span id="cb12-18"><a href="website-comparison-with-nlp.html#cb12-18"></a><span class="co"># Plot word cloud.</span></span>
-<span id="cb12-19"><a href="website-comparison-with-nlp.html#cb12-19"></a><span class="kw">plot_word_cloud</span>(df_tf_idf, <span class="dt">max_size =</span> <span class="dv">14</span>)    </span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="website-comparison-with-nlp.html#cb23-1"></a><span class="co"># Utility function to plot word cloud.</span></span>
+<span id="cb23-2"><a href="website-comparison-with-nlp.html#cb23-2"></a>plot_word_cloud &lt;-<span class="st"> </span><span class="cf">function</span>(df, max_size) {</span>
+<span id="cb23-3"><a href="website-comparison-with-nlp.html#cb23-3"></a>    <span class="co"># Prepare data.</span></span>
+<span id="cb23-4"><a href="website-comparison-with-nlp.html#cb23-4"></a>    df_plt &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span></span>
+<span id="cb23-5"><a href="website-comparison-with-nlp.html#cb23-5"></a><span class="st">        </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(doc_class, doc_id) <span class="op">%&gt;%</span></span>
+<span id="cb23-6"><a href="website-comparison-with-nlp.html#cb23-6"></a><span class="st">        </span>dplyr<span class="op">::</span><span class="kw">top_n</span>(<span class="dv">30</span>, <span class="dt">wt =</span> tf_idf) <span class="op">%&gt;%</span></span>
+<span id="cb23-7"><a href="website-comparison-with-nlp.html#cb23-7"></a><span class="st">        </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">angle =</span> <span class="dv">90</span> <span class="op">*</span><span class="st"> </span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="kw">n</span>(), <span class="dt">replace =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb23-8"><a href="website-comparison-with-nlp.html#cb23-8"></a>                                          <span class="dt">prob =</span> <span class="kw">c</span>(<span class="dv">60</span>, <span class="dv">40</span>)))</span>
+<span id="cb23-9"><a href="website-comparison-with-nlp.html#cb23-9"></a></span>
+<span id="cb23-10"><a href="website-comparison-with-nlp.html#cb23-10"></a>    <span class="co"># Create plot</span></span>
+<span id="cb23-11"><a href="website-comparison-with-nlp.html#cb23-11"></a>    <span class="kw">ggplot</span>(df_plt, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> tf_idf, <span class="dt">angle =</span> angle)) <span class="op">+</span></span>
+<span id="cb23-12"><a href="website-comparison-with-nlp.html#cb23-12"></a><span class="st">        </span>ggwordcloud<span class="op">::</span><span class="kw">geom_text_wordcloud</span>(<span class="dt">seed =</span> <span class="dv">42</span>, <span class="dt">eccentricity =</span> <span class="dv">1</span>,</span>
+<span id="cb23-13"><a href="website-comparison-with-nlp.html#cb23-13"></a>                                         <span class="dt">shape =</span> <span class="st">&#39;square&#39;</span>) <span class="op">+</span></span>
+<span id="cb23-14"><a href="website-comparison-with-nlp.html#cb23-14"></a><span class="st">        </span>ggplot2<span class="op">::</span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> max_size) <span class="op">+</span></span>
+<span id="cb23-15"><a href="website-comparison-with-nlp.html#cb23-15"></a><span class="st">        </span>ggplot2<span class="op">::</span><span class="kw">coord_equal</span>() <span class="op">+</span></span>
+<span id="cb23-16"><a href="website-comparison-with-nlp.html#cb23-16"></a><span class="st">        </span>ggplot2<span class="op">::</span><span class="kw">facet_wrap</span>(<span class="op">~</span>doc_class <span class="op">+</span><span class="st"> </span>doc_id, <span class="dt">dir =</span> <span class="st">&#39;v&#39;</span>, <span class="dt">ncol =</span> <span class="dv">3</span>) <span class="op">+</span></span>
+<span id="cb23-17"><a href="website-comparison-with-nlp.html#cb23-17"></a><span class="st">        </span>ggplot2<span class="op">::</span><span class="kw">theme_linedraw</span>()</span>
+<span id="cb23-18"><a href="website-comparison-with-nlp.html#cb23-18"></a>}</span>
+<span id="cb23-19"><a href="website-comparison-with-nlp.html#cb23-19"></a></span>
+<span id="cb23-20"><a href="website-comparison-with-nlp.html#cb23-20"></a><span class="co"># Plot word cloud.</span></span>
+<span id="cb23-21"><a href="website-comparison-with-nlp.html#cb23-21"></a><span class="kw">plot_word_cloud</span>(df_tf_idf, <span class="dt">max_size =</span> <span class="dv">14</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span id="fig:plt-wordcloud-with-tw"></span>
 <img src="02-website-comparison-with-nlp_files/figure-html/plt-wordcloud-with-tw-1.png" alt="Word clouds faceted by document categories." width="100%" />
 <p class="caption">
@@ -371,32 +386,32 @@ Figure 2.1: Word clouds faceted by document categories.
 </div>
 <p>It is also insightful to remove the title words and recalculate the <span class="math inline">\(\mathrm{TFIDF}\)</span> word cloud. The title words tend to overwhelm the other distinctive i.e. information-carrying words. The resulting word cloud is shown in figure <a href="website-comparison-with-nlp.html#fig:plt-wordcloud-no-tw">2.2</a>.</p>
 
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="website-comparison-with-nlp.html#cb13-1"></a><span class="co"># Utility function to remove stemmed title words.</span></span>
-<span id="cb13-2"><a href="website-comparison-with-nlp.html#cb13-2"></a>eliminate_words &lt;-<span class="st"> </span><span class="cf">function</span>(title) {</span>
-<span id="cb13-3"><a href="website-comparison-with-nlp.html#cb13-3"></a>    stringr<span class="op">::</span><span class="kw">str_split</span>(title, <span class="st">&quot; &quot;</span>)[[<span class="dv">1</span>]] <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb13-4"><a href="website-comparison-with-nlp.html#cb13-4"></a><span class="st">        </span>tm<span class="op">::</span><span class="kw">stemDocument</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb13-5"><a href="website-comparison-with-nlp.html#cb13-5"></a><span class="st">        </span>stringr<span class="op">::</span><span class="kw">str_to_lower</span>()</span>
-<span id="cb13-6"><a href="website-comparison-with-nlp.html#cb13-6"></a>}</span>
-<span id="cb13-7"><a href="website-comparison-with-nlp.html#cb13-7"></a></span>
-<span id="cb13-8"><a href="website-comparison-with-nlp.html#cb13-8"></a>df_tf_idf_no_tw &lt;-<span class="st"> </span>df_tokens <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb13-9"><a href="website-comparison-with-nlp.html#cb13-9"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(doc_id) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb13-10"><a href="website-comparison-with-nlp.html#cb13-10"></a><span class="st">    </span><span class="co"># Eliminate title words.</span></span>
-<span id="cb13-11"><a href="website-comparison-with-nlp.html#cb13-11"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(<span class="op">!</span>(word <span class="op">%in%</span><span class="st"> </span><span class="kw">eliminate_words</span>(doc_id))) <span class="op">%&gt;%</span></span>
-<span id="cb13-12"><a href="website-comparison-with-nlp.html#cb13-12"></a><span class="st">    </span><span class="co"># Remove acronyms and misspellings.</span></span>
-<span id="cb13-13"><a href="website-comparison-with-nlp.html#cb13-13"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(<span class="op">!</span>(doc_id <span class="op">==</span><span class="st"> &#39;C++&#39;</span> <span class="op">&amp;</span><span class="st"> </span>word <span class="op">==</span><span class="st"> &#39;c&#39;</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb13-14"><a href="website-comparison-with-nlp.html#cb13-14"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(<span class="op">!</span>(doc_id <span class="op">==</span><span class="st"> &#39;Dobermann&#39;</span> <span class="op">&amp;</span><span class="st"> </span>word <span class="op">==</span><span class="st"> &#39;doberman&#39;</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb13-15"><a href="website-comparison-with-nlp.html#cb13-15"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(</span>
-<span id="cb13-16"><a href="website-comparison-with-nlp.html#cb13-16"></a>        <span class="op">!</span>(doc_id <span class="op">==</span><span class="st"> &#39;Staffordshire Bull Terrier&#39;</span> <span class="op">&amp;</span><span class="st"> </span>word <span class="op">==</span><span class="st"> &#39;stafford&#39;</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb13-17"><a href="website-comparison-with-nlp.html#cb13-17"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(<span class="op">!</span>(doc_id <span class="op">==</span><span class="st"> &#39;Artificial Intelligence&#39;</span> <span class="op">&amp;</span><span class="st"> </span>word <span class="op">==</span><span class="st"> &#39;ai&#39;</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb13-18"><a href="website-comparison-with-nlp.html#cb13-18"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></span>
-<span id="cb13-19"><a href="website-comparison-with-nlp.html#cb13-19"></a><span class="st">    </span><span class="co"># Compute TFIDF</span></span>
-<span id="cb13-20"><a href="website-comparison-with-nlp.html#cb13-20"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(doc_class, doc_id) <span class="op">%&gt;%</span></span>
-<span id="cb13-21"><a href="website-comparison-with-nlp.html#cb13-21"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">count</span>(word, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
-<span id="cb13-22"><a href="website-comparison-with-nlp.html#cb13-22"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></span>
-<span id="cb13-23"><a href="website-comparison-with-nlp.html#cb13-23"></a><span class="st">    </span>tidytext<span class="op">::</span><span class="kw">bind_tf_idf</span>(word, doc_id, n)</span>
-<span id="cb13-24"><a href="website-comparison-with-nlp.html#cb13-24"></a></span>
-<span id="cb13-25"><a href="website-comparison-with-nlp.html#cb13-25"></a><span class="co"># Plot word cloud</span></span>
-<span id="cb13-26"><a href="website-comparison-with-nlp.html#cb13-26"></a><span class="kw">plot_word_cloud</span>(df_tf_idf_no_tw, <span class="dt">max_size =</span> <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="website-comparison-with-nlp.html#cb24-1"></a><span class="co"># Utility function to remove stemmed title words.</span></span>
+<span id="cb24-2"><a href="website-comparison-with-nlp.html#cb24-2"></a>eliminate_words &lt;-<span class="st"> </span><span class="cf">function</span>(title) {</span>
+<span id="cb24-3"><a href="website-comparison-with-nlp.html#cb24-3"></a>    stringr<span class="op">::</span><span class="kw">str_split</span>(title, <span class="st">&quot; &quot;</span>)[[<span class="dv">1</span>]] <span class="op">%&gt;%</span></span>
+<span id="cb24-4"><a href="website-comparison-with-nlp.html#cb24-4"></a><span class="st">        </span>tm<span class="op">::</span><span class="kw">stemDocument</span>() <span class="op">%&gt;%</span></span>
+<span id="cb24-5"><a href="website-comparison-with-nlp.html#cb24-5"></a><span class="st">        </span>stringr<span class="op">::</span><span class="kw">str_to_lower</span>()</span>
+<span id="cb24-6"><a href="website-comparison-with-nlp.html#cb24-6"></a>}</span>
+<span id="cb24-7"><a href="website-comparison-with-nlp.html#cb24-7"></a></span>
+<span id="cb24-8"><a href="website-comparison-with-nlp.html#cb24-8"></a>df_tf_idf_no_tw &lt;-<span class="st"> </span>df_tokens <span class="op">%&gt;%</span></span>
+<span id="cb24-9"><a href="website-comparison-with-nlp.html#cb24-9"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(doc_id) <span class="op">%&gt;%</span></span>
+<span id="cb24-10"><a href="website-comparison-with-nlp.html#cb24-10"></a><span class="st">    </span><span class="co"># Eliminate title words.</span></span>
+<span id="cb24-11"><a href="website-comparison-with-nlp.html#cb24-11"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(<span class="op">!</span>(word <span class="op">%in%</span><span class="st"> </span><span class="kw">eliminate_words</span>(doc_id))) <span class="op">%&gt;%</span></span>
+<span id="cb24-12"><a href="website-comparison-with-nlp.html#cb24-12"></a><span class="st">    </span><span class="co"># Remove acronyms and misspellings.</span></span>
+<span id="cb24-13"><a href="website-comparison-with-nlp.html#cb24-13"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(<span class="op">!</span>(doc_id <span class="op">==</span><span class="st"> &#39;C++&#39;</span> <span class="op">&amp;</span><span class="st"> </span>word <span class="op">==</span><span class="st"> &#39;c&#39;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb24-14"><a href="website-comparison-with-nlp.html#cb24-14"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(<span class="op">!</span>(doc_id <span class="op">==</span><span class="st"> &#39;Dobermann&#39;</span> <span class="op">&amp;</span><span class="st"> </span>word <span class="op">==</span><span class="st"> &#39;doberman&#39;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb24-15"><a href="website-comparison-with-nlp.html#cb24-15"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(</span>
+<span id="cb24-16"><a href="website-comparison-with-nlp.html#cb24-16"></a>        <span class="op">!</span>(doc_id <span class="op">==</span><span class="st"> &#39;Staffordshire Bull Terrier&#39;</span> <span class="op">&amp;</span><span class="st"> </span>word <span class="op">==</span><span class="st"> &#39;stafford&#39;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb24-17"><a href="website-comparison-with-nlp.html#cb24-17"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(<span class="op">!</span>(doc_id <span class="op">==</span><span class="st"> &#39;Artificial Intelligence&#39;</span> <span class="op">&amp;</span><span class="st"> </span>word <span class="op">==</span><span class="st"> &#39;ai&#39;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb24-18"><a href="website-comparison-with-nlp.html#cb24-18"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></span>
+<span id="cb24-19"><a href="website-comparison-with-nlp.html#cb24-19"></a><span class="st">    </span><span class="co"># Compute TFIDF</span></span>
+<span id="cb24-20"><a href="website-comparison-with-nlp.html#cb24-20"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(doc_class, doc_id) <span class="op">%&gt;%</span></span>
+<span id="cb24-21"><a href="website-comparison-with-nlp.html#cb24-21"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">count</span>(word, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
+<span id="cb24-22"><a href="website-comparison-with-nlp.html#cb24-22"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></span>
+<span id="cb24-23"><a href="website-comparison-with-nlp.html#cb24-23"></a><span class="st">    </span>tidytext<span class="op">::</span><span class="kw">bind_tf_idf</span>(word, doc_id, n)</span>
+<span id="cb24-24"><a href="website-comparison-with-nlp.html#cb24-24"></a></span>
+<span id="cb24-25"><a href="website-comparison-with-nlp.html#cb24-25"></a><span class="co"># Plot word cloud</span></span>
+<span id="cb24-26"><a href="website-comparison-with-nlp.html#cb24-26"></a><span class="kw">plot_word_cloud</span>(df_tf_idf_no_tw, <span class="dt">max_size =</span> <span class="dv">10</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span id="fig:plt-wordcloud-no-tw"></span>
 <img src="02-website-comparison-with-nlp_files/figure-html/plt-wordcloud-no-tw-1.png" alt="Word clouds faceted by document categories with title document title words removed from the corpus." width="100%" />
 <p class="caption">
@@ -406,18 +421,18 @@ Figure 2.2: Word clouds faceted by document categories with title document title
 <p>From figure <a href="website-comparison-with-nlp.html#fig:plt-wordcloud-no-tw">2.2</a> the high scoring words seem consistent with experience in these subjects and this confirms that the <span class="math inline">\(\mathrm{TFIDF}\)</span> metric is a useful indicator of the words that best describe what is distinctive about the contents of a document.</p>
 <p>Notice that the word ‘dog’ is significant for each of the 5 pages relating to dogs. This is to be expected since the word ‘dog’ is not a generally significant word for the 15 document corpus but <em>is</em> significant for these 5 articles. Therefore, the <span class="math inline">\(\mathrm{TFIDF}\)</span> is relatively large. To demonstrate the usefulness of the <span class="math inline">\(\textrm{TFIDF}\)</span> metric, it will be recalculated for <em>only</em> the dog articles. The resulting word cloud is shown in figure @ref{fig:plt-wordcloud-dogs}. It is observed that the word ‘dog’ is eliminated since although the absolute count of the word for each document has not changed, it is now common to all documents, hence the <span class="math inline">\(\mathrm{IDF}\)</span> is 0.</p>
 
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="website-comparison-with-nlp.html#cb14-1"></a>df_tf_idf_dogs &lt;-<span class="st"> </span>df_tokens <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb14-2"><a href="website-comparison-with-nlp.html#cb14-2"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(doc_class <span class="op">==</span><span class="st"> &#39;Dogs&#39;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb14-3"><a href="website-comparison-with-nlp.html#cb14-3"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(doc_class, doc_id) <span class="op">%&gt;%</span></span>
-<span id="cb14-4"><a href="website-comparison-with-nlp.html#cb14-4"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">count</span>(word, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
-<span id="cb14-5"><a href="website-comparison-with-nlp.html#cb14-5"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(<span class="op">!</span>(word <span class="op">%in%</span><span class="st"> </span><span class="kw">eliminate_words</span>(doc_id))) <span class="op">%&gt;%</span></span>
-<span id="cb14-6"><a href="website-comparison-with-nlp.html#cb14-6"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(<span class="op">!</span>(doc_id <span class="op">==</span><span class="st"> &#39;Dobermann&#39;</span> <span class="op">&amp;</span><span class="st"> </span>word <span class="op">==</span><span class="st"> &#39;doberman&#39;</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb14-7"><a href="website-comparison-with-nlp.html#cb14-7"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(</span>
-<span id="cb14-8"><a href="website-comparison-with-nlp.html#cb14-8"></a>        <span class="op">!</span>(doc_id <span class="op">==</span><span class="st"> &#39;Staffordshire Bull Terrier&#39;</span> <span class="op">&amp;</span><span class="st"> </span>word <span class="op">==</span><span class="st"> &#39;stafford&#39;</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb14-9"><a href="website-comparison-with-nlp.html#cb14-9"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></span>
-<span id="cb14-10"><a href="website-comparison-with-nlp.html#cb14-10"></a><span class="st">    </span>tidytext<span class="op">::</span><span class="kw">bind_tf_idf</span>(word, doc_id, n)</span>
-<span id="cb14-11"><a href="website-comparison-with-nlp.html#cb14-11"></a></span>
-<span id="cb14-12"><a href="website-comparison-with-nlp.html#cb14-12"></a><span class="kw">plot_word_cloud</span>(df_tf_idf_dogs, <span class="dt">max_size =</span> <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="website-comparison-with-nlp.html#cb25-1"></a>df_tf_idf_dogs &lt;-<span class="st"> </span>df_tokens <span class="op">%&gt;%</span></span>
+<span id="cb25-2"><a href="website-comparison-with-nlp.html#cb25-2"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(doc_class <span class="op">==</span><span class="st"> &#39;Dogs&#39;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb25-3"><a href="website-comparison-with-nlp.html#cb25-3"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(doc_class, doc_id) <span class="op">%&gt;%</span></span>
+<span id="cb25-4"><a href="website-comparison-with-nlp.html#cb25-4"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">count</span>(word, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
+<span id="cb25-5"><a href="website-comparison-with-nlp.html#cb25-5"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(<span class="op">!</span>(word <span class="op">%in%</span><span class="st"> </span><span class="kw">eliminate_words</span>(doc_id))) <span class="op">%&gt;%</span></span>
+<span id="cb25-6"><a href="website-comparison-with-nlp.html#cb25-6"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(<span class="op">!</span>(doc_id <span class="op">==</span><span class="st"> &#39;Dobermann&#39;</span> <span class="op">&amp;</span><span class="st"> </span>word <span class="op">==</span><span class="st"> &#39;doberman&#39;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb25-7"><a href="website-comparison-with-nlp.html#cb25-7"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">filter</span>(</span>
+<span id="cb25-8"><a href="website-comparison-with-nlp.html#cb25-8"></a>        <span class="op">!</span>(doc_id <span class="op">==</span><span class="st"> &#39;Staffordshire Bull Terrier&#39;</span> <span class="op">&amp;</span><span class="st"> </span>word <span class="op">==</span><span class="st"> &#39;stafford&#39;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb25-9"><a href="website-comparison-with-nlp.html#cb25-9"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></span>
+<span id="cb25-10"><a href="website-comparison-with-nlp.html#cb25-10"></a><span class="st">    </span>tidytext<span class="op">::</span><span class="kw">bind_tf_idf</span>(word, doc_id, n)</span>
+<span id="cb25-11"><a href="website-comparison-with-nlp.html#cb25-11"></a></span>
+<span id="cb25-12"><a href="website-comparison-with-nlp.html#cb25-12"></a><span class="kw">plot_word_cloud</span>(df_tf_idf_dogs, <span class="dt">max_size =</span> <span class="dv">10</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span id="fig:plt-wordcloud-dogs"></span>
 <img src="02-website-comparison-with-nlp_files/figure-html/plt-wordcloud-dogs-1.png" alt="Word clouds for documents relating to dogs." width="100%" />
 <p class="caption">
@@ -439,7 +454,7 @@ Figure 2.3: Word clouds for documents relating to dogs.
 <p>Silge, Julia, and David Robinson. 2016. “Tidytext: Text Mining and Analysis Using Tidy Data Principles in R.” <em>JOSS</em> 1 (3). <a href="https://doi.org/10.21105/joss.00037">https://doi.org/10.21105/joss.00037</a>.</p>
 </div>
 <div id="ref-R-rvest">
-<p>Wickham, Hadley. 2019. <em>Rvest: Easily Harvest (Scrape) Web Pages</em>. <a href="https://CRAN.R-project.org/package=rvest">https://CRAN.R-project.org/package=rvest</a>.</p>
+<p>Wickham, Hadley. 2019a. <em>Rvest: Easily Harvest (Scrape) Web Pages</em>. <a href="https://CRAN.R-project.org/package=rvest">https://CRAN.R-project.org/package=rvest</a>.</p>
 </div>
 <div id="ref-R-xml2">
 <p>Wickham, Hadley, Jim Hester, and Jeroen Ooms. 2020. <em>Xml2: Parse Xml</em>. <a href="https://CRAN.R-project.org/package=xml2">https://CRAN.R-project.org/package=xml2</a>.</p>
@@ -451,7 +466,7 @@ Figure 2.3: Word clouds for documents relating to dogs.
         </div>
       </div>
 <a href="document-comparison-with-nlp.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="ch-advanced-pdf-parsing.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
