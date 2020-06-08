@@ -24,7 +24,7 @@
 <meta name="author" content="Nick P Taylor" />
 
 
-<meta name="date" content="2020-06-02" />
+<meta name="date" content="2020-06-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -138,7 +138,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.1" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#introduction"><i class="fa fa-check"></i><b>1.1</b> Introduction</a></li>
 <li class="chapter" data-level="1.2" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#read-document"><i class="fa fa-check"></i><b>1.2</b> Read Document</a></li>
 <li class="chapter" data-level="1.3" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#tidy-corpus"><i class="fa fa-check"></i><b>1.3</b> Tidy Corpus</a></li>
-<li class="chapter" data-level="1.4" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#analsysis"><i class="fa fa-check"></i><b>1.4</b> Analsysis</a></li>
+<li class="chapter" data-level="1.4" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#analysis"><i class="fa fa-check"></i><b>1.4</b> Analysis</a></li>
 <li class="chapter" data-level="1.5" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#exploratory-analysis"><i class="fa fa-check"></i><b>1.5</b> Exploratory Analysis</a><ul>
 <li class="chapter" data-level="1.5.1" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#word-frequency"><i class="fa fa-check"></i><b>1.5.1</b> Word Frequency</a></li>
 <li class="chapter" data-level="1.5.2" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#commonality-cloud"><i class="fa fa-check"></i><b>1.5.2</b> Commonality Cloud</a></li>
@@ -223,7 +223,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li><code>name</code>: The name of the case</li>
 <li><code>url</code>: The URL of the PDF document</li>
-<li><code>use_fonts</code>: The font heights of the text that this to be processed</li>
+<li><code>use_fonts</code>: The font heights of the text for processing</li>
 <li><code>page_range</code>: The range of pages to process</li>
 </ul>
 <p>Due to the nature of PDF documents, some preliminary inspection is required to determine the fonts size for the <code>use_fonts</code> field i.e. the text that contains the informative content rather than headers/footers, title, etc. This inspection was performed using the <code>pdf_data</code> function from <code>pdftools</code> package <span class="citation">(Ooms <a href="#ref-R-pdftools" role="doc-biblioref">2020</a>)</span>. See <a href="ch-advanced-pdf-parsing.html#ch:advanced-pdf-parsing">3</a> for more detail.</p>
@@ -366,8 +366,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## express view issu backdrop conclus reach determin give
 ## judgment mnos net sum claim respect</code></pre>
 </div>
-<div id="analsysis" class="section level2">
-<h2><span class="header-section-number">1.4</span> Analsysis</h2>
+<div id="analysis" class="section level2">
+<h2><span class="header-section-number">1.4</span> Analysis</h2>
 <p>A <em>term-document</em> matrix (TDM) can now be constructed. This is a matrix listing all words in the <em>corpus</em> (the superset of words in all documents) and the frequency with which they occur for each document. Recall, that the processing is done on word <em>stems</em>. Once the processing is complete, the stem is replaced with the most prevalent unstemmed word; this is so that when word clouds are generated later, natural English words are shown rather than stems.</p>
 <p>In the chunk below, a TDM object is created and it is also transformed to a data frame for convenience. Ten random rows of the term document data frame are shown below the code chunk.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="document-comparison-with-nlp.html#cb6-1"></a><span class="co"># Compute term document matrix.</span></span>
@@ -481,11 +481,11 @@ Figure 1.3: Commonality cloud.
 </div>
 <div id="comparison-cloud" class="section level3">
 <h3><span class="header-section-number">1.5.3</span> Comparison Cloud</h3>
-<p>Figure <a href="document-comparison-with-nlp.html#fig:plt-comparison-cloud">1.4</a> shows a <em>comparison cloud</em>. Contrary to the <em>commonality</em> cloud empathising <em>similarities</em>, the <em>comparison</em> cloud emphasises <em>differences</em> in. Let <span class="math inline">\(f_{i,j}\)</span> be the frequency of word <span class="math inline">\(i\)</span> in document <span class="math inline">\(j\)</span> and let <span class="math inline">\(\bar{p}_i\)</span> be the average frequency of word <span class="math inline">\(i\)</span> in the corpus i.e.</p>
+<p>Figure <a href="document-comparison-with-nlp.html#fig:plt-comparison-cloud">1.4</a> shows a <em>comparison cloud</em>. Contrary to the <em>commonality</em> cloud emphasising <em>similarities</em>, the <em>comparison</em> cloud emphasises <em>differences</em> in. Let <span class="math inline">\(f_{i,j}\)</span> be the frequency of word <span class="math inline">\(i\)</span> in document <span class="math inline">\(j\)</span> and let <span class="math inline">\(\bar{p}_i\)</span> be the average frequency of word <span class="math inline">\(i\)</span> in the corpus i.e.</p>
 <p><span class="math display">\[
 \bar{p}_i = \frac{1}{J}\sum_{j=1}^{J} f_{i,j}.
 \]</span></p>
-<p>where <span class="math inline">\(J\)</span> number of documents in the corpus. Then, in the <em>comparison cloud</em>, the size of of the word is mapped to the maximum deviation i.e. <span class="math inline">\(\max_i(p_{i,j}-\bar{p}_i)\)</span> and the position corresponds to the document in which the maximum occurs. In other words, the words shown are cases where a particular document contains many instances of the word whereas the other documents do not. The comparison cloud is plotted using the <code>wordcloud</code> package <span class="citation">(Fellows <a href="#ref-R-wordcloud" role="doc-biblioref">2018</a>)</span>.</p>
+<p>where <span class="math inline">\(J\)</span> is the number of documents in the corpus. Then, in the <em>comparison cloud</em>, the size of of the word is mapped to the maximum deviation i.e. <span class="math inline">\(\max_i(p_{i,j}-\bar{p}_i)\)</span> and the position corresponds to the document in which the maximum occurs. In other words, the words shown are cases where a particular document contains many instances of the word whereas the other documents do not. The comparison cloud is plotted using the <code>wordcloud</code> package <span class="citation">(Fellows <a href="#ref-R-wordcloud" role="doc-biblioref">2018</a>)</span>.</p>
 
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="document-comparison-with-nlp.html#cb11-1"></a>mat_plt &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(tdm)</span>
 <span id="cb11-2"><a href="document-comparison-with-nlp.html#cb11-2"></a></span>

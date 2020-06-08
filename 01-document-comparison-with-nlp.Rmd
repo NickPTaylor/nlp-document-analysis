@@ -80,7 +80,7 @@ The fields in the JSON are:
 
 * `name`: The name of the case
 * `url`: The URL of the PDF document
-* `use_fonts`: The font heights of the text that this to be processed
+* `use_fonts`: The font heights of the text for processing
 * `page_range`: The range of pages to process
 
 Due to the nature of PDF documents, some preliminary inspection is required to determine the fonts size for the `use_fonts` field i.e. the text that contains the informative content rather than headers/footers, title, etc.  This inspection was performed using the `pdf_data` function from `pdftools` package [@R-pdftools].  See \@ref(ch:advanced-pdf-parsing) for more detail.
@@ -174,7 +174,7 @@ tidy_corpus %>%
     cat(sep = '\n--------\n')
 ```
 
-## Analsysis
+## Analysis
 
 A *term-document* matrix (TDM) can now be constructed.  This is a matrix listing all words in the *corpus* (the superset of words in all documents) and the frequency with which they occur for each document.  Recall, that the processing is done on word *stems*.  Once the processing is complete, the stem is replaced with the most prevalent unstemmed word; this is so that when word clouds are generated later, natural English words are shown rather than stems.
 
@@ -273,13 +273,13 @@ The common words identified seem reasonable; the majority relate to general voca
 
 ### Comparison Cloud
 
-Figure \@ref(fig:plt-comparison-cloud) shows a *comparison cloud*.  Contrary to the *commonality* cloud empathising *similarities*, the *comparison* cloud emphasises *differences* in.  Let $f_{i,j}$ be the frequency of word $i$ in document $j$ and let $\bar{p}_i$ be the average frequency of word $i$ in the corpus i.e.
+Figure \@ref(fig:plt-comparison-cloud) shows a *comparison cloud*.  Contrary to the *commonality* cloud emphasising *similarities*, the *comparison* cloud emphasises *differences* in.  Let $f_{i,j}$ be the frequency of word $i$ in document $j$ and let $\bar{p}_i$ be the average frequency of word $i$ in the corpus i.e.
 
 $$
 \bar{p}_i = \frac{1}{J}\sum_{j=1}^{J} f_{i,j}.
 $$
 
-where $J$ number of documents in the corpus.  Then, in the *comparison cloud*, the size of of the word is mapped to the maximum deviation i.e. $\max_i(p_{i,j}-\bar{p}_i)$ and the position corresponds to the document in which the maximum occurs.  In other words, the words shown are cases where a particular document contains many instances of the word whereas the other documents do not.  The comparison cloud is plotted using the `wordcloud` package [@R-wordcloud].
+where $J$ is the number of documents in the corpus.  Then, in the *comparison cloud*, the size of of the word is mapped to the maximum deviation i.e. $\max_i(p_{i,j}-\bar{p}_i)$ and the position corresponds to the document in which the maximum occurs.  In other words, the words shown are cases where a particular document contains many instances of the word whereas the other documents do not.  The comparison cloud is plotted using the `wordcloud` package [@R-wordcloud].
 
 (ref:plt-comparison-cloud) Comparison cloud.
 

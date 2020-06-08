@@ -117,7 +117,7 @@ df_doc_data_raw %>%
 ## 10    69    16     22   108   229 FALSE V         2779
 ```
 
-The raw data frame contains a row for each word.  The objective of the following code is to traverse the data frame above and derive groups of words that form each individual section headings.  This is achieved by first filtering words that have the section heading height.   Subsequently, by joining these filtered words that either occur on the same line or on consecutive lines, section headings can be inferred.  It is necessary to consider consecutive lines since it is possible that long section headings contain a line break although this does not occur in the current document.
+The raw data frame contains a row for each word.  The objective of the following code is to traverse the data frame above and derive groups of words that form each individual section heading.  This is achieved by first filtering words that have the section heading height.   Subsequently, by joining these filtered words that either occur on the same line or on consecutive lines, section headings can be inferred.  It is necessary to consider consecutive lines since it is possible that long section headings contain a line break although this does not occur in the current document.
 
 The procedure in the code block below is:
 
@@ -133,7 +133,6 @@ df_headings <- df_doc_data_raw %>%
     # Filter words that make up headings.
     dplyr::filter(height == HEADING_SIZE) %>%
     # Group words that form each heading and assign head_ID.
-    dplyr::mutate(doc_line_diff = doc_line - lag(doc_line, default = )) %>%
     dplyr::mutate(doc_line_diff = doc_line - lag(doc_line)) %>%
     tidyr::replace_na(list(doc_line_diff = -1)) %>%
     dplyr::mutate(head_id = cumsum(doc_line_diff > 1)) %>%
@@ -240,4 +239,4 @@ The data is now in a form whereby NLP (Natural Language Processing) methods can 
 
 ## Conclusion
 
-It is possible to infer PDF section heading by manipulating the metadata available from the PDF encoding.  It is considerably more challenging to traverse the section hierarchy of PDF documents than HTML documents.  The method described herein requires assumptions and interpretations in order to infer what text is a section heading and what the hierarchy is.  In contrast, markup tags make this explicit in HTML documents.  For section-by-section processing of a PDF document, human inspection and interpretation would be required for each document of study i.e. to determine likely section heading heights.
+It is possible to infer PDF section headings by manipulating the metadata available from the PDF encoding.  It is considerably more challenging to traverse the section hierarchy of PDF documents than HTML documents.  The method described herein requires assumptions and interpretations in order to infer what text is a section heading and what the hierarchy is.  In contrast, markup tags make this explicit in HTML documents.  For section-by-section processing of a PDF document, human inspection and interpretation would be required for each document of study i.e. to determine likely section heading heights.

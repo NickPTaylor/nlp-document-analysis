@@ -114,7 +114,7 @@ df_html %>%
 
 ## Tokenisation
 
-The content of the webpages is processed as follows:
+The content of the web pages is processed as follows:
 
 * Scraped text is tokenised to single words using `tidytext::unnest_tokens` [@R-tidytext ; @tidytext2016]; words are automatically converted to lower-case.
 * Words which do not solely consist of ASCII alphabetical characters are removed.
@@ -145,9 +145,9 @@ Let $N_{i, j}$ denote the word count for the $i$th word in the $j$th document.  
 $$
 \mathrm{TF}_{i,j} = \frac{N_{i,j}}{\sum_{k=1}^{K} N_{k,j}}
 $$
-where $k$ iterates through every word in the $j$th document.  The *term frequency* is therefore the word frequency in the document normalised with respect to the total word count for the document; in other words, it is the the proportion of the document made comprised of the $i$th word.
+where $k$ iterates through every word in the $j$th document.  The *term frequency* is therefore the word frequency in the document normalised with respect to the total word count for the document; in other words, it is the proportion of the document made comprised of the $i$th word.
 
-The *term frequency* might be considered as a measure of the *importance* of a word in a document; however, words that are *generally* important in language, such as stop words, will score highly.  Similarly, if a group of documents with a common theme are to be distinguished from each other, certain words will carry less information that is specific to a document.  For example, the word 'computer' may be common in documents relating to 'programming languages', hence it coveys information about the general theme but not about a specific document within that theme.  The *inverse document frequency*, $\mathrm{IDF}$, is a metric which mitigates this:
+The *term frequency* might be considered as a measure of the *importance* of a word in a document; however, words that are *generally* important in language, such as stop words, will score highly.  Similarly, if a group of documents with a common theme are to be distinguished from each other, certain words will carry less information that is specific to a document.  For example, the word 'computer' may be common in documents relating to 'programming languages', hence it conveys information about the general theme but not about a specific document within that theme.  The *inverse document frequency*, $\mathrm{IDF}$, is a metric which mitigates this:
 
 $$
 \mathrm{IDF}_{i} = \ln \left[
@@ -168,7 +168,7 @@ df_tf_idf <- df_tokens %>%
     tidytext::bind_tf_idf(word, doc_id, n)
 ```
 
-Below, the metrics for the words with the lowest and highest $\mathrm{TFIDF}$ are shown.  The word count 'the' is very common in each document i.e. $n$ is large.  However, the $\mathrm{IDF}$ is 0 since it occurs in all documents, thus $\mathrm{TFIDF}$ is also 0.  On the contrary, the word 'dobermann' has relatively few counts in the document on Dobermann but since it does not occur in other documents, it has a high $\mathrm{IDF}$ i.e. $\mathrm{IDF} = ln(15/1) = 2.71$.
+Below, the metrics for the words with the lowest and highest $\mathrm{TFIDF}$ are shown.  The word count 'the' is very common in each document i.e. $n$ is large.  However, the $\mathrm{IDF}$ is 0 since it occurs in all documents, thus $\mathrm{TFIDF}$ is also 0.  On the contrary, the word 'dobermann' has relatively few counts in the document on Dobermanns but since it does not occur in other documents, it has a high $\mathrm{IDF}$ i.e. $\mathrm{IDF} = ln(15/1) = 2.71$.
 
 ```{r echo=FALSE}
 cat("Lowest TFIDF...")

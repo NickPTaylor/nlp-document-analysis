@@ -24,7 +24,7 @@
 <meta name="author" content="Nick P Taylor" />
 
 
-<meta name="date" content="2020-06-02" />
+<meta name="date" content="2020-06-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -138,7 +138,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.1" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#introduction"><i class="fa fa-check"></i><b>1.1</b> Introduction</a></li>
 <li class="chapter" data-level="1.2" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#read-document"><i class="fa fa-check"></i><b>1.2</b> Read Document</a></li>
 <li class="chapter" data-level="1.3" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#tidy-corpus"><i class="fa fa-check"></i><b>1.3</b> Tidy Corpus</a></li>
-<li class="chapter" data-level="1.4" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#analsysis"><i class="fa fa-check"></i><b>1.4</b> Analsysis</a></li>
+<li class="chapter" data-level="1.4" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#analysis"><i class="fa fa-check"></i><b>1.4</b> Analysis</a></li>
 <li class="chapter" data-level="1.5" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#exploratory-analysis"><i class="fa fa-check"></i><b>1.5</b> Exploratory Analysis</a><ul>
 <li class="chapter" data-level="1.5.1" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#word-frequency"><i class="fa fa-check"></i><b>1.5.1</b> Word Frequency</a></li>
 <li class="chapter" data-level="1.5.2" data-path="document-comparison-with-nlp.html"><a href="document-comparison-with-nlp.html#commonality-cloud"><i class="fa fa-check"></i><b>1.5.2</b> Commonality Cloud</a></li>
@@ -280,7 +280,7 @@ Function specific to a language</code></pre>
 </div>
 <div id="tokenisation" class="section level2">
 <h2><span class="header-section-number">2.3</span> Tokenisation</h2>
-<p>The content of the webpages is processed as follows:</p>
+<p>The content of the web pages is processed as follows:</p>
 <ul>
 <li>Scraped text is tokenised to single words using <code>tidytext::unnest_tokens</code> <span class="citation">(Robinson and Silge <a href="#ref-R-tidytext" role="doc-biblioref">2020</a> ; Silge and Robinson <a href="#ref-tidytext2016" role="doc-biblioref">2016</a>)</span>; words are automatically converted to lower-case.</li>
 <li>Words which do not solely consist of ASCII alphabetical characters are removed.</li>
@@ -316,8 +316,8 @@ Function specific to a language</code></pre>
 <p><span class="math display">\[
 \mathrm{TF}_{i,j} = \frac{N_{i,j}}{\sum_{k=1}^{K} N_{k,j}}
 \]</span>
-where <span class="math inline">\(k\)</span> iterates through every word in the <span class="math inline">\(j\)</span>th document. The <em>term frequency</em> is therefore the word frequency in the document normalised with respect to the total word count for the document; in other words, it is the the proportion of the document made comprised of the <span class="math inline">\(i\)</span>th word.</p>
-<p>The <em>term frequency</em> might be considered as a measure of the <em>importance</em> of a word in a document; however, words that are <em>generally</em> important in language, such as stop words, will score highly. Similarly, if a group of documents with a common theme are to be distinguished from each other, certain words will carry less information that is specific to a document. For example, the word ‘computer’ may be common in documents relating to ‘programming languages’, hence it coveys information about the general theme but not about a specific document within that theme. The <em>inverse document frequency</em>, <span class="math inline">\(\mathrm{IDF}\)</span>, is a metric which mitigates this:</p>
+where <span class="math inline">\(k\)</span> iterates through every word in the <span class="math inline">\(j\)</span>th document. The <em>term frequency</em> is therefore the word frequency in the document normalised with respect to the total word count for the document; in other words, it is the proportion of the document made comprised of the <span class="math inline">\(i\)</span>th word.</p>
+<p>The <em>term frequency</em> might be considered as a measure of the <em>importance</em> of a word in a document; however, words that are <em>generally</em> important in language, such as stop words, will score highly. Similarly, if a group of documents with a common theme are to be distinguished from each other, certain words will carry less information that is specific to a document. For example, the word ‘computer’ may be common in documents relating to ‘programming languages’, hence it conveys information about the general theme but not about a specific document within that theme. The <em>inverse document frequency</em>, <span class="math inline">\(\mathrm{IDF}\)</span>, is a metric which mitigates this:</p>
 <p><span class="math display">\[
 \mathrm{IDF}_{i} = \ln \left[
     \frac{\sum_{j=1}^{J}j}
@@ -331,7 +331,7 @@ where <span class="math inline">\(k\)</span> iterates through every word in the 
 <span id="cb18-3"><a href="website-comparison-with-nlp.html#cb18-3"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">count</span>(word, <span class="dt">sort =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
 <span id="cb18-4"><a href="website-comparison-with-nlp.html#cb18-4"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></span>
 <span id="cb18-5"><a href="website-comparison-with-nlp.html#cb18-5"></a><span class="st">    </span>tidytext<span class="op">::</span><span class="kw">bind_tf_idf</span>(word, doc_id, n)</span></code></pre></div>
-<p>Below, the metrics for the words with the lowest and highest <span class="math inline">\(\mathrm{TFIDF}\)</span> are shown. The word count ‘the’ is very common in each document i.e. <span class="math inline">\(n\)</span> is large. However, the <span class="math inline">\(\mathrm{IDF}\)</span> is 0 since it occurs in all documents, thus <span class="math inline">\(\mathrm{TFIDF}\)</span> is also 0. On the contrary, the word ‘dobermann’ has relatively few counts in the document on Dobermann but since it does not occur in other documents, it has a high <span class="math inline">\(\mathrm{IDF}\)</span> i.e. <span class="math inline">\(\mathrm{IDF} = ln(15/1) = 2.71\)</span>.</p>
+<p>Below, the metrics for the words with the lowest and highest <span class="math inline">\(\mathrm{TFIDF}\)</span> are shown. The word count ‘the’ is very common in each document i.e. <span class="math inline">\(n\)</span> is large. However, the <span class="math inline">\(\mathrm{IDF}\)</span> is 0 since it occurs in all documents, thus <span class="math inline">\(\mathrm{TFIDF}\)</span> is also 0. On the contrary, the word ‘dobermann’ has relatively few counts in the document on Dobermanns but since it does not occur in other documents, it has a high <span class="math inline">\(\mathrm{IDF}\)</span> i.e. <span class="math inline">\(\mathrm{IDF} = ln(15/1) = 2.71\)</span>.</p>
 <pre><code>## Lowest TFIDF...</code></pre>
 <pre><code>## # A tibble: 6 x 7
 ##   doc_class            doc_id                  word      n     tf   idf tf_idf
